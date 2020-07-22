@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class BookmarkScreen extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
+  _BookmarkScreen createState() {
     return _BookmarkScreen();
   }
 

@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 
 import 'Work.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'Redux.dart';
 
 class WorkScreen extends StatefulWidget {
   final String path;
@@ -40,46 +42,53 @@ class _WorkScreen extends State<WorkScreen> {
     fetchHtml();
   }
 
-  final htmlUrl = "http://cbdata.dila.edu.tw/v1.2/juans?juan=1&edition=CBETA&work=";
+  final htmlUrl =
+      "http://cbdata.dila.edu.tw/v1.2/juans?juan=1&edition=CBETA&work=";
   var workHtml = "";
+
   void fetchHtml() async {
     final data = await fetchData(client, htmlUrl + widget.path);
     setState(() {
       workHtml = data[0];
-      updateWebView();
     });
   }
 
-  void updateWebView() {
-
+  void updateWebView(WebViewController controller, double fontSize) {
     final String styles = '''
     <style>
     .lb {
       display: none
     }
     .t {
-      font-size: 48px
+      font-size: ${fontSize}px
     }
     </style>
     ''';
     final String contentBase64 =
-    base64Encode(const Utf8Encoder().convert(workHtml + styles));
+        base64Encode(const Utf8Encoder().convert(styles + workHtml));
     controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
   final Completer<WebViewController> _controller =
-  Completer<WebViewController>();
-  WebViewController controller;
+      Completer<WebViewController>();
 
   @override
   Widget build(BuildContext context) {
-    return WebView(
-      //initialUrl: 'https://flutter.dev',
-      javascriptMode: JavascriptMode.unrestricted,
-      onWebViewCreated: (WebViewController webViewController) {
-        _controller.complete(webViewController);
-        controller = webViewController;
-      },
-    );
+    return StoreConnector<Map<String, dynamic>, MyState>(converter: (store) {
+      return MyState(
+        state: store.state,
+      );
+    }, builder: (BuildContext context, MyState vm) {
+      _controller.future.then((controller) {
+        updateWebView(controller, vm.state["fontSize"]);
+      });
+      return WebView(
+        //initialUrl: 'https://flutter.dev',
+        javascriptMode: JavascriptMode.unrestricted,
+        onWebViewCreated: (WebViewController webViewController) {
+          _controller.complete(webViewController);
+        },
+      );
+    });
   }
 }

@@ -1,40 +1,67 @@
 import 'package:cbetar/BookScreen.dart';
 import 'package:cbetar/BookmarkScreen.dart';
+import 'package:flutter/gestures.dart';
+import 'SettingScreen.dart';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
+
+import 'Redux.dart';
+
+Map<String, dynamic> reducer(Map<String, dynamic> state, dynamic action) {
+  if (action.type == ActionTypes.CHANGE_FONT_SIZE) {
+    state["fontSize"] = action.value;
+  }
+
+  return state;
+}
 
 void main() {
-  runApp(MyApp());
+  final initState = Map<String, dynamic>();
+  initState["fontSize"] = 32.0;
+  final store = Store<Map<String, dynamic>>(reducer, initialState: initState);
+  runApp(MyApp(store: store,));
 }
 
 class MyApp extends StatelessWidget {
+  final Store<Map<String, dynamic>> store;
+
+  MyApp({Key key, this.store}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text('CBETA閱讀器'),
-          ),
-          body: TabBarView(
-            children: [
-              Navigator(
-                onGenerateRoute: (RouteSettings routeSettings) {
-                  return MaterialPageRoute(builder: (context) => BookScreen(path: "CBETA"));
-                },
-              ),
-              BookmarkScreen(),
-              Icon(Icons.directions_bike),
-            ],
-          ),
-          bottomNavigationBar: Container(
-            color: Color(0xFF3F5AA6),
-            child: TabBar(
-              tabs: [
-                Tab(icon: Icon(Icons.search)),
-                Tab(icon: Icon(Icons.favorite)),
-                Tab(icon: Icon(Icons.settings)),
+    return StoreProvider<Map<String, dynamic>>(
+      store: store,
+      child: MaterialApp(
+        home: DefaultTabController(
+          length: 3,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text('CBETA閱讀器'),
+            ),
+            body: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
+              children: [
+                Navigator(
+                  onGenerateRoute: (RouteSettings routeSettings) {
+                    return MaterialPageRoute(
+                        builder: (context) => BookScreen(path: "CBETA"));
+                  },
+                ),
+                BookmarkScreen(),
+                SettingScreen(),
               ],
+            ),
+            bottomNavigationBar: Container(
+              color: Color(0xFF3F5AA6),
+              child: TabBar(
+                tabs: [
+                  Tab(icon: Icon(Icons.search)),
+                  Tab(icon: Icon(Icons.favorite)),
+                  Tab(icon: Icon(Icons.settings)),
+                ],
+              ),
             ),
           ),
         ),
