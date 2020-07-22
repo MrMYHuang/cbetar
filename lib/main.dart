@@ -18,7 +18,11 @@ class MyApp extends StatelessWidget {
           ),
           body: TabBarView(
             children: [
-              BookScreen(),
+              Navigator(
+                onGenerateRoute: (RouteSettings routeSettings) {
+                  return MaterialPageRoute(builder: (context) => BookScreen(path: "CBETA"));
+                },
+              ),
               BookmarkScreen(),
               Icon(Icons.directions_bike),
             ],

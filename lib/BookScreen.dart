@@ -3,18 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'Catalog.dart';
+import 'WorkScreen.dart';
 
 class BookScreen extends StatefulWidget {
+  final String path;
+
+  BookScreen({Key key, this.path}) : super(key: key);
+
   @override
-  State<StatefulWidget> createState() {
+  _BookScreen createState() {
     return _BookScreen();
   }
 }
 
 class _BookScreen extends State<BookScreen> {
+
   List<Catalog> catalogs = List<Catalog>();
   final client = http.Client();
-  final url = "http://cbdata.dila.edu.tw/v1.2/catalog_entry?q=CBETA";
+  final url = "http://cbdata.dila.edu.tw/v1.2/catalog_entry?q=";
 
   @override
   void initState() {
@@ -23,7 +29,7 @@ class _BookScreen extends State<BookScreen> {
   }
 
   void fetch() async {
-    final data = await fetchData(client, url);
+    final data = await fetchData(client, url + widget.path);
 
     setState(() {
       catalogs = List<Catalog>();
@@ -40,10 +46,24 @@ class _BookScreen extends State<BookScreen> {
         itemBuilder: (BuildContext context, int index) {
           // access element from list using index
           // you can create and return a widget of your choice
-          return Text(
-            catalogs[index].label
+          return GestureDetector(
+            child: Text(catalogs[index].label),
+            onTap: () {
+              if(catalogs[index].work == null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>
+                      BookScreen(path: catalogs[index].n)),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>
+                      WorkScreen(path: catalogs[index].work)),
+                );
+              }
+            },
           );
-        }
-    );
+        });
   }
 }
