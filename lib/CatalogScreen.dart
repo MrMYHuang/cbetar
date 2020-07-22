@@ -7,18 +7,18 @@ import 'Redux.dart';
 import 'Catalog.dart';
 import 'WorkScreen.dart';
 
-class BookScreen extends StatefulWidget {
+class CatalogScreen extends StatefulWidget {
   final String path;
 
-  BookScreen({Key key, this.path}) : super(key: key);
+  CatalogScreen({Key key, this.path}) : super(key: key);
 
   @override
-  _BookScreen createState() {
-    return _BookScreen();
+  _CatalogScreen createState() {
+    return _CatalogScreen();
   }
 }
 
-class _BookScreen extends State<BookScreen> {
+class _CatalogScreen extends State<CatalogScreen> {
   List<Catalog> catalogs = List<Catalog>();
   final client = http.Client();
   final url = "http://cbdata.dila.edu.tw/v1.2/catalog_entry?q=";
@@ -60,7 +60,7 @@ class _BookScreen extends State<BookScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            BookScreen(path: catalogs[index].n)),
+                            CatalogScreen(path: catalogs[index].n)),
                   );
                 } else {
                   Navigator.push(
