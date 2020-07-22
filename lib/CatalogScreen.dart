@@ -18,7 +18,7 @@ class CatalogScreen extends StatefulWidget {
   }
 }
 
-class _CatalogScreen extends State<CatalogScreen> {
+class _CatalogScreen extends State<CatalogScreen> with AutomaticKeepAliveClientMixin {
   List<Catalog> catalogs = List<Catalog>();
   final client = http.Client();
   final url = "http://cbdata.dila.edu.tw/v1.2/catalog_entry?q=";
@@ -75,4 +75,7 @@ class _CatalogScreen extends State<CatalogScreen> {
           });
     });
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

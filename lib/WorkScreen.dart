@@ -21,7 +21,7 @@ class WorkScreen extends StatefulWidget {
   }
 }
 
-class _WorkScreen extends State<WorkScreen> {
+class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
   var works = List<Work>();
   final client = http.Client();
   final url = "http://cbdata.dila.edu.tw/v1.2/works?work=";
@@ -91,4 +91,7 @@ class _WorkScreen extends State<WorkScreen> {
       );
     });
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
