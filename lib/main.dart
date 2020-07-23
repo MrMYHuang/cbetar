@@ -21,7 +21,9 @@ void main() {
   final initState = Map<String, dynamic>();
   initState["fontSize"] = 32.0;
   final store = Store<Map<String, dynamic>>(reducer, initialState: initState);
-  runApp(MyApp(store: store,));
+  runApp(MyApp(
+    store: store,
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -37,32 +39,15 @@ class MyApp extends StatelessWidget {
         home: DefaultTabController(
           length: 3,
           child: Scaffold(
-            appBar: AppBar(
-              title: Text('CBETA閱讀器'),
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(Icons.bookmark),
-                  onPressed: () {
-                    bookmarkHandler();
-                  },
-                ),
-                IconButton(
-                  icon: Icon(Icons.pin_drop),
-                  onPressed: () {
-                    scrollToBookmarkHandler();
-                  },
-                ),
-              ],
-            ),
             body: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               children: [
                 Navigator(
-                  onGenerateRoute: (RouteSettings routeSettings) {
-                    return MaterialPageRoute(
-                        builder: (context) => CatalogScreen(path: "CBETA"));
-                  },
-                ),
+                onGenerateRoute: (RouteSettings routeSettings) {
+                  return MaterialPageRoute(
+                      builder: (context) => CatalogScreen(path: "CBETA"));
+                },
+              ),
                 BookmarkScreen(),
                 SettingScreen(),
               ],
@@ -83,4 +68,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
