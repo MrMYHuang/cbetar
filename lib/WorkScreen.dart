@@ -78,7 +78,7 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
                       context,
                       PageRouteBuilder(
                           pageBuilder: (context, animation1, animation2) =>
-                              WebViewScreen(work: widget.work, juan: juans[index])),
+                              WebViewScreen(title: works[0].title, work: widget.work, juan: juans[index])),
                     );
                   },
                 );

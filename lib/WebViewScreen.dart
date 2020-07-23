@@ -14,10 +14,11 @@ import 'Redux.dart';
 import 'Globals.dart';
 
 class WebViewScreen extends StatefulWidget {
+  final String title;
   final String work;
   final String juan;
 
-  WebViewScreen({Key key, this.work, this.juan}) : super(key: key);
+  WebViewScreen({Key key, this.title, this.work, this.juan}) : super(key: key);
 
   @override
   _WebViewScreen createState() {
@@ -131,7 +132,7 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
   Widget _webviewScreen() {
     return Scaffold(
       appBar: AppBar(
-        title: Text('CBETA閱讀器'),
+        title: Text("${widget.title} - 第${widget.juan}卷"),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.bookmark),
