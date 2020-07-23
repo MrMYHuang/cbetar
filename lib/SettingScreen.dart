@@ -16,7 +16,7 @@ class _SettingScreen extends State<SettingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<Map<String, dynamic>, _SettingScreenViewModel>(
+    return StoreConnector<AppState, _SettingScreenViewModel>(
         converter: (store) {
           return _SettingScreenViewModel(
             state: store.state,
@@ -29,13 +29,13 @@ class _SettingScreen extends State<SettingScreen> {
               ListTile(
                 leading: Icon(Icons.format_size),
                 title: Slider(
-                  value: vm.state["fontSize"],
+                  value: vm.state.fontSize,
                   min: 10,
                   max: 64,
                   divisions: (64 - 10),
                   onChanged: vm.onChanged
                 ),
-                subtitle: Text('字型大小:${vm.state["fontSize"]}'),
+                subtitle: Text('字型大小:${vm.state.fontSize}'),
               ),
               ListTile(
                 leading: Icon(Icons.help),
@@ -78,7 +78,7 @@ class _SettingScreen extends State<SettingScreen> {
 }
 
 class _SettingScreenViewModel {
-  final Map<String, dynamic> state;
+  final AppState state;
   final void Function(double value) onChanged;
 
   _SettingScreenViewModel({this.state, this.onChanged});

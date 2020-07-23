@@ -52,11 +52,9 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<Map<String, dynamic>, MyState>(converter: (store) {
-      return MyState(
-        state: store.state,
-      );
-    }, builder: (BuildContext context, MyState vm) {
+    return StoreConnector<AppState, AppState>(converter: (store) {
+      return store.state;
+    }, builder: (BuildContext context, AppState vm) {
       return Scaffold(
           appBar: AppBar(
             title: Text(widget.work),
@@ -70,7 +68,7 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
                 return GestureDetector(
                   child: Text(
                     "卷${juans[index]}",
-                    style: TextStyle(fontSize: vm.state["fontSize"]),
+                    style: TextStyle(fontSize: vm.fontSize),
                   ),
                   onTap: () {
                     Navigator.push(

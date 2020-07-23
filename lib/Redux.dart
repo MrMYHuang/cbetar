@@ -2,11 +2,25 @@ enum ActionTypes {
   CHANGE_FONT_SIZE
 }
 
-class MyState {
-  final Map<String, dynamic> state;
+class AppState {
+  final double fontSize;
 
-  MyState({this.state});
+  AppState({this.fontSize = 32});
+
+  AppState copyWith({double fontSize}) =>
+      AppState(fontSize: fontSize ?? this.fontSize);
+
+  static AppState fromJson(dynamic json) {
+    if (json != null) {
+      return AppState(fontSize: json["fontSize"]);
+    } else {
+      return AppState();
+    }
+  }
+
+  dynamic toJson() => {'fontSize': fontSize};
 }
+
 
 class MyViewModel {
   final Map<String, dynamic> state;

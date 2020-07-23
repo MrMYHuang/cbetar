@@ -1,39 +1,50 @@
+import 'dart:io';
+
 import 'package:cbetar/CatalogScreen.dart';
 import 'package:cbetar/BookmarkScreen.dart';
+import 'package:cbetar/Utilities.dart';
 import 'SettingScreen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+import 'package:redux_persist/redux_persist.dart';
 
 import 'Redux.dart';
-import 'Globals.dart';
 
-Map<String, dynamic> reducer(Map<String, dynamic> state, dynamic action) {
+AppState reducer(AppState state, dynamic action) {
   if (action.type == ActionTypes.CHANGE_FONT_SIZE) {
-    state["fontSize"] = action.value;
+    return AppState(fontSize: action.value);
   }
 
   return state;
 }
 
-void main() {
-  final initState = Map<String, dynamic>();
-  initState["fontSize"] = 32.0;
-  final store = Store<Map<String, dynamic>>(reducer, initialState: initState);
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final persistor = Persistor<AppState>(
+    storage: FileStorage(await getLocalFile('state.json')), // Or use other engines
+    serializer: JsonSerializer<AppState>(AppState.fromJson), // Or use other serializers
+  );
+
+  final initialState = await persistor.load();
+  final store = Store<AppState>(
+      reducer,
+      initialState: initialState ?? AppState(),
+      middleware: [persistor.createMiddleware()]);
   runApp(MyApp(
     store: store,
   ));
 }
 
 class MyApp extends StatelessWidget {
-  final Store<Map<String, dynamic>> store;
+  final Store<AppState> store;
 
   MyApp({Key key, this.store}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return StoreProvider<Map<String, dynamic>>(
+    return StoreProvider<AppState>(
       store: store,
       child: MaterialApp(
         home: DefaultTabController(

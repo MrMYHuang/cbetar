@@ -43,11 +43,9 @@ class _CatalogScreen extends State<CatalogScreen>
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<Map<String, dynamic>, MyState>(converter: (store) {
-      return MyState(
-        state: store.state,
-      );
-    }, builder: (BuildContext context, MyState vm) {
+    return StoreConnector<AppState, AppState>(converter: (store) {
+      return store.state;
+    }, builder: (BuildContext context, AppState vm) {
       return Scaffold(
           appBar: AppBar(
             title: Text(widget.path),
@@ -61,7 +59,7 @@ class _CatalogScreen extends State<CatalogScreen>
                 return GestureDetector(
                   child: Text(
                     catalogs[index].label,
-                    style: TextStyle(fontSize: vm.state["fontSize"]),
+                    style: TextStyle(fontSize: vm.fontSize),
                   ),
                   onTap: () {
                     if (catalogs[index].work == null) {

@@ -116,13 +116,11 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<Map<String, dynamic>, MyState>(converter: (store) {
-      return MyState(
-        state: store.state,
-      );
-    }, builder: (BuildContext context, MyState vm) {
+    return StoreConnector<AppState, AppState>(converter: (store) {
+      return store.state;
+    }, builder: (BuildContext context, AppState vm) {
       _controller.future.then((controller) {
-        updateWebView(controller, vm.state["fontSize"]);
+        updateWebView(controller, vm.fontSize);
       });
       return workHtml == ""
           ? Center(child: CircularProgressIndicator())
