@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cbetar/Utilities.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -9,6 +11,7 @@ import 'Work.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'Redux.dart';
+import 'Globals.dart';
 
 class WorkScreen extends StatefulWidget {
   final String path;
@@ -29,6 +32,16 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
+    bookmarkHandler = () {
+      _controller.future.then((controller) {
+        controller.evaluateJavascript("createBookmark()");
+      });
+    };
+    scrollToBookmarkHandler = () {
+      _controller.future.then((controller) {
+        controller.evaluateJavascript("scrollToBookmark()");
+      });
+    };
     fetch();
   }
 
@@ -63,6 +76,28 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
       font-size: ${fontSize}px
     }
     </style>
+  <script>
+    var bookmarkId = 'cbetarBookmark';
+    function createBookmark() {
+      var sel, range;
+      if (window.getSelection) {
+        sel = window.getSelection();
+        if (sel.rangeCount) {
+          var newSpan = document.createElement('span');
+          newSpan.id = bookmarkId;
+          newSpan.className = 't';
+          newSpan.appendChild(document.createTextNode(sel.toString()));
+          range = sel.getRangeAt(0);
+          range.deleteContents();
+          range.insertNode(newSpan);
+        }
+      }
+    }
+
+    function scrollToBookmark() {
+      document.getElementById(bookmarkId).scrollIntoView();
+    }
+  </script>
     ''';
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(styles + workHtml));
@@ -83,12 +118,12 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
         updateWebView(controller, vm.state["fontSize"]);
       });
       return WebView(
-        //initialUrl: 'https://flutter.dev',
-        javascriptMode: JavascriptMode.unrestricted,
-        onWebViewCreated: (WebViewController webViewController) {
-          _controller.complete(webViewController);
-        },
-      );
+          //initialUrl: 'https://flutter.dev',
+          javascriptMode: JavascriptMode.unrestricted,
+          onWebViewCreated: (WebViewController webViewController) {
+            _controller.complete(webViewController);
+          },
+          gestureRecognizers: {Factory(() => EagerGestureRecognizer())});
     });
   }
 

@@ -1,0 +1,2 @@
+Function() bookmarkHandler;
+Function() scrollToBookmarkHandler;

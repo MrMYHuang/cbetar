@@ -7,6 +7,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
 import 'Redux.dart';
+import 'Globals.dart';
 
 Map<String, dynamic> reducer(Map<String, dynamic> state, dynamic action) {
   if (action.type == ActionTypes.CHANGE_FONT_SIZE) {
@@ -38,6 +39,20 @@ class MyApp extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               title: Text('CBETA閱讀器'),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(Icons.bookmark),
+                  onPressed: () {
+                    bookmarkHandler();
+                  },
+                ),
+                IconButton(
+                  icon: Icon(Icons.pin_drop),
+                  onPressed: () {
+                    scrollToBookmarkHandler();
+                  },
+                ),
+              ],
             ),
             body: TabBarView(
               physics: NeverScrollableScrollPhysics(),
