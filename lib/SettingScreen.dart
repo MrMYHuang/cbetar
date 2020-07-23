@@ -25,64 +25,75 @@ class _SettingScreen extends State<SettingScreen> {
             MyActions(type: ActionTypes.CHANGE_FONT_SIZE, value: value)),
       );
     }, builder: (BuildContext context, _SettingScreenViewModel vm) {
-      return ListView(
-        children: <Widget>[
-          ListTile(
-            leading: Icon(Icons.format_size),
-            title: Slider(
-                value: vm.state.fontSize,
-                min: 10,
-                max: 64,
-                divisions: (64 - 10),
-                onChanged: vm.onChanged),
-            subtitle: Text(
-              '字型大小:${vm.state.fontSize}',
-              style: TextStyle(fontSize: vm.state.fontSize),
+      return Scaffold(
+        appBar: AppBar(
+          title: Text("設定"),
+        ),
+        body: ListView(
+          children: <Widget>[
+            ListTile(
+              leading: Icon(Icons.format_size),
+              title: Slider(
+                  value: vm.state.fontSize,
+                  min: 10,
+                  max: 64,
+                  divisions: (64 - 10),
+                  onChanged: vm.onChanged),
+              subtitle: Text(
+                '字型大小:${vm.state.fontSize}',
+                style: TextStyle(fontSize: vm.state.fontSize),
+              ),
             ),
-          ),
-          ListTile(
-            leading: Icon(Icons.help),
-            title: Text(
-              '特色',
-              style: TextStyle(fontSize: fontSizeNorm),
+            ListTile(
+              leading: Icon(Icons.help),
+              title: Text(
+                '特色',
+                style: TextStyle(fontSize: fontSizeNorm),
+              ),
+              subtitle: Text(
+                '離線瀏覽、書籤功能、字型調整。',
+                style: TextStyle(fontSize: fontSizeNorm),
+              ),
             ),
-            subtitle: Text(
-              '離線瀏覽、書籤功能、字型調整。',
-              style: TextStyle(fontSize: fontSizeNorm),
-            ),
-          ),
-          ListTile(
-            leading: Icon(Icons.person),
-            title: Text('作者',
-              style: TextStyle(fontSize: fontSizeNorm),),
-            subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text('Meng-Yuan Huang',
-                    style: TextStyle(fontSize: fontSizeNorm),),
-                  RichText(
-                    text: TextSpan(
-                      text: 'myh@live.com',
-                      style: TextStyle(color: Colors.blue, fontSize: fontSizeNorm),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          launch('mailto:myh@live.com');
-                        },
+            ListTile(
+              leading: Icon(Icons.person),
+              title: Text(
+                '作者',
+                style: TextStyle(fontSize: fontSizeNorm),
+              ),
+              subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      'Meng-Yuan Huang',
+                      style: TextStyle(fontSize: fontSizeNorm),
                     ),
-                  ),
-                  RichText(
-                    text: TextSpan(
-                      text: '開放原始碼',
-                      style: TextStyle(color: Colors.blue, fontSize: fontSizeNorm),
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () {
-                          launch('https://github.com/MrMYHuang/cbetar');
-                        },
+                    RichText(
+                      text: TextSpan(
+                        text: 'myh@live.com',
+                        style: TextStyle(
+                            color: Colors.blue, fontSize: fontSizeNorm),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            launch('mailto:myh@live.com');
+                          },
+                      ),
                     ),
-                  )
-                ]),
-          ),
-        ],
+                    RichText(
+                      text: TextSpan(
+                        text: '開放原始碼',
+                        style: TextStyle(
+                            color: Colors.blue, fontSize: fontSizeNorm),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            launch('https://github.com/MrMYHuang/cbetar');
+                          },
+                      ),
+                    )
+                  ]),
+            ),
+          ],
+        ),
       );
     });
   }
