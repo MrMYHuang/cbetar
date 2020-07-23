@@ -50,8 +50,11 @@ class _CatalogScreen extends State<CatalogScreen>
           appBar: AppBar(
             title: Text(widget.path),
           ),
-          body: ListView.builder(
-              addRepaintBoundaries: true,
+          body: ListView.separated(
+              separatorBuilder: (context, index) => Divider(
+                color: Colors.black,
+                thickness: 1,
+              ),
               itemCount: catalogs.length,
               itemBuilder: (BuildContext context, int index) {
                 // access element from list using index
@@ -59,7 +62,7 @@ class _CatalogScreen extends State<CatalogScreen>
                 return GestureDetector(
                   child: Text(
                     catalogs[index].label,
-                    style: TextStyle(fontSize: vm.fontSize),
+                    style: TextStyle(fontSize: 40),
                   ),
                   onTap: () {
                     if (catalogs[index].work == null) {

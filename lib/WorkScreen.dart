@@ -59,8 +59,11 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
           appBar: AppBar(
             title: Text(widget.work),
           ),
-          body: ListView.builder(
-              addRepaintBoundaries: true,
+          body: ListView.separated(
+              separatorBuilder: (context, index) => Divider(
+                color: Colors.black,
+                thickness: 1,
+              ),
               itemCount: juans.length,
               itemBuilder: (BuildContext context, int index) {
                 // access element from list using index
@@ -68,7 +71,7 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
                 return GestureDetector(
                   child: Text(
                     "卷${juans[index]}",
-                    style: TextStyle(fontSize: vm.fontSize),
+                    style: TextStyle(fontSize: 40),
                   ),
                   onTap: () {
                     Navigator.push(
