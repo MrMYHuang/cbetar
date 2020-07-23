@@ -34,7 +34,7 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
     super.initState();
     bookmarkHandler = () {
       _controller.future.then((controller) {
-        controller.evaluateJavascript("createBookmark()");
+        controller.evaluateJavascript("replaceBookmark()");
       });
     };
     scrollToBookmarkHandler = () {
@@ -78,7 +78,14 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
     </style>
   <script>
     var bookmarkId = 'cbetarBookmark';
-    function createBookmark() {
+    function replaceBookmark() {
+      var oldBookmark = document.getElementById(bookmarkId);
+      if (oldBookmark) {
+        var originalText = oldBookmark.textContent;
+        oldBookmark.parentElement.appendChild(document.createTextNode(originalText));
+        oldBookmark.remove();
+      }
+      
       var sel, range;
       if (window.getSelection) {
         sel = window.getSelection();
