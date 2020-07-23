@@ -29,10 +29,12 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
   var works = List<Work>();
   final client = http.Client();
   final url = "http://cbdata.dila.edu.tw/v1.2/works?work=";
+  var fileName = "";
 
   @override
   void initState() {
     super.initState();
+    fileName = "${widget.work}_juan${widget.juan}.html";
     fetchHtml();
   }
 
@@ -40,7 +42,18 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
   final base64HtmlPrefix = 'data:text/html;base64,';
 
   void fetchHtml() async {
+    final file = await getLocalFile(fileName);
+    if (file.existsSync()) {
+      final temp = await loadLocalFile(fileName);
+      setState(() {
+        workHtml = temp;
+      });
+      return;
+    }
+
     final data = await fetchData(client, "http://cbdata.dila.edu.tw/v1.2/juans?edition=CBETA&work=${widget.work}&juan=${widget.juan}");
+
+    saveFile(fileName, data[0]);
     setState(() {
       workHtml = data[0];
     });
@@ -153,7 +166,7 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
     return JavascriptChannel(
         name: 'SaveHtml',
         onMessageReceived: (JavascriptMessage message) {
-          print(message.message);
+          saveFile(fileName, message.message);
         });
   }
 
