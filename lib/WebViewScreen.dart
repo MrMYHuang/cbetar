@@ -6,19 +6,19 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:uuid/uuid.dart';
 
+import 'Boormark.dart';
 import 'Work.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'Redux.dart';
-import 'Globals.dart';
 
 class WebViewScreen extends StatefulWidget {
-  final String title;
-  final String work;
-  final String juan;
+  final Work work;
+  final String bookmarkUuid;
 
-  WebViewScreen({Key key, this.title, this.work, this.juan}) : super(key: key);
+  WebViewScreen({Key key, this.work, this.bookmarkUuid = ""}) : super(key: key);
 
   @override
   _WebViewScreen createState() {
@@ -35,7 +35,7 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
   @override
   void initState() {
     super.initState();
-    fileName = "${widget.work}_juan${widget.juan}.html";
+    fileName = "${widget.work.work}_juan${widget.work.juan}.html";
     fetchHtml();
   }
 
@@ -52,15 +52,23 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
       return;
     }
 
-    final data = await fetchData(client, "http://cbdata.dila.edu.tw/v1.2/juans?edition=CBETA&work=${widget.work}&juan=${widget.juan}");
-
+    final data = await fetchData(client, "http://cbdata.dila.edu.tw/v1.2/juans?edition=CBETA&work=${widget.work.work}&juan=${widget.work.juan}");
+    
     saveFile(fileName, data[0]);
     setState(() {
       workHtml = data[0];
     });
   }
 
-  void updateWebView(WebViewController controller, double fontSize) {
+  void updateWebView(WebViewController controller, double fontSize) async {
+    var scrollToBookmark = '';
+    if (widget.bookmarkUuid != "") {
+      scrollToBookmark = '''
+      <script>
+      scrollToBookmark('${widget.bookmarkUuid}');
+      </script>
+      ''';
+    }
     final String styles = '''
     <style>
     .lb {
@@ -71,47 +79,51 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
     }
     </style>
   <script>
-    var bookmarkId = 'cbetarBookmark';
-    function replaceBookmark() {
-      var oldBookmark = document.getElementById(bookmarkId);
-      if (oldBookmark) {
-        oldBookmark.id = '';
-      }
-
+    var bookmarkPrefix = 'bookmark_';
+    function addBookmark(uuid) {
       var sel, range;
       if (window.getSelection) {
         sel = window.getSelection();
         if (sel.rangeCount) {
           range = sel.getRangeAt(0);
-          range.startContainer.parentElement.id = bookmarkId;
+          range.startContainer.parentElement.id = bookmarkPrefix + uuid;
+          var msg = JSON.stringify({selectedText: sel.toString(), html: document.body.outerHTML}) 
+          SaveHtml.postMessage(msg);
         }
       }
     }
+    
+    function delBookmark(uuid) {
+      var oldBookmark = document.getElementById(bookmarkPrefix + uuid);
+      if (oldBookmark) {
+        oldBookmark.id = '';
+      }
+    }
 
-    function scrollToBookmark() {
-      document.getElementById(bookmarkId).scrollIntoView();
+    function scrollToBookmark(uuid) {
+      document.getElementById(bookmarkPrefix + uuid).scrollIntoView();
     }
   </script>
     ''';
     final String contentBase64 =
-    base64Encode(const Utf8Encoder().convert(styles + workHtml));
-    controller.loadUrl('$base64HtmlPrefix$contentBase64');
+    base64Encode(const Utf8Encoder().convert(styles + workHtml + scrollToBookmark));
+    await controller.loadUrl('$base64HtmlPrefix$contentBase64');
   }
 
   final Completer<WebViewController> _controller =
   Completer<WebViewController>();
 
-  void bookmarkHandler() {
+  var bookmarkNewUuid = "";
+  void addBookmarkHandler() {
     _controller.future.then((controller) {
-      controller.evaluateJavascript("replaceBookmark()");
-      controller.evaluateJavascript(
-          "SaveHtml.postMessage(document.body.outerHTML)");
+      bookmarkNewUuid = Uuid().v4().toString();
+      controller.evaluateJavascript("addBookmark('${bookmarkNewUuid}');");
     });
   }
 
   void scrollToBookmarkHandler() {
     _controller.future.then((controller) {
-      controller.evaluateJavascript("scrollToBookmark()");
+      controller.evaluateJavascript("scrollToBookmark('${widget.bookmarkUuid}')");
     });
   }
 
@@ -132,12 +144,12 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
   Widget _webviewScreen() {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.title} - 第${widget.juan}卷"),
+        title: Text("${widget.work.title} - 第${widget.work.juan}卷"),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.bookmark),
             onPressed: () {
-              bookmarkHandler();
+              addBookmarkHandler();
             },
           ),
           IconButton(
@@ -165,7 +177,12 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
     return JavascriptChannel(
         name: 'SaveHtml',
         onMessageReceived: (JavascriptMessage message) {
-          saveFile(fileName, message.message);
+          final json = JsonDecoder().convert(message.message);
+          final htmlStr = json["html"] as String;
+          final selectedText = json["selectedText"] as String;
+          saveFile(fileName, htmlStr);
+          final bookmarkNew = Bookmark(uuid: bookmarkNewUuid, work: widget.work, selectedText: selectedText);
+          store.dispatch(MyActions(type: ActionTypes.ADD_BOOKMARK, value: bookmarkNew));
         });
   }
 

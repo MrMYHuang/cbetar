@@ -1,18 +1,12 @@
-import 'dart:async';
-import 'dart:convert';
-
 import 'package:cbetar/Utilities.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'WebViewScreen.dart';
 import 'Work.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'Redux.dart';
-import 'Globals.dart';
 
 class WorkScreen extends StatefulWidget {
   final String work;
@@ -74,11 +68,13 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
                     style: TextStyle(fontSize: 40),
                   ),
                   onTap: () {
+                    var work = works[0];
+                    work.juan = int.parse(juans[index]);
                     Navigator.push(
                       context,
                       PageRouteBuilder(
                           pageBuilder: (context, animation1, animation2) =>
-                              WebViewScreen(title: works[0].title, work: widget.work, juan: juans[index])),
+                              WebViewScreen(work: work)),
                     );
                   },
                 );

@@ -38,6 +38,7 @@ dev_dependencies:
   flutter_redux:
   redux_persist:
   path_provider:
+  uuid:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
