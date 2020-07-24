@@ -2,6 +2,7 @@ import 'package:cbetar/Utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_redux/flutter_redux.dart';
+import 'Globals.dart';
 import 'Redux.dart';
 
 import 'Catalog.dart';
@@ -22,7 +23,7 @@ class _CatalogScreen extends State<CatalogScreen>
     with AutomaticKeepAliveClientMixin {
   List<Catalog> catalogs;
   final client = http.Client();
-  final url = "http://cbdata.dila.edu.tw/v1.2/catalog_entry?q=";
+  final url = "${cbetaApiUrl}/catalog_entry?q=";
 
   @override
   void initState() {

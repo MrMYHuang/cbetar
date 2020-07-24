@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cbetar/Globals.dart';
 import 'package:cbetar/Utilities.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -30,7 +31,7 @@ class _WebViewScreen extends State<WebViewScreen>
     with AutomaticKeepAliveClientMixin {
   var works = List<Work>();
   final client = http.Client();
-  final url = "http://cbdata.dila.edu.tw/v1.2/works?work=";
+  final url = "${cbetaApiUrl}/works?work=";
   var fileName = "";
 
   @override
@@ -57,7 +58,7 @@ class _WebViewScreen extends State<WebViewScreen>
 
     try {
       final data = await fetchData(client,
-          "http://cbdata.dila.edu.tw/v1.2/juans?edition=CBETA&work=${widget.work.work}&juan=${widget.work.juan}");
+          "${cbetaApiUrl}/juans?edition=CBETA&work=${widget.work.work}&juan=${widget.work.juan}");
 
       saveFile(fileName, data[0]);
       setState(() {

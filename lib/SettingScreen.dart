@@ -65,11 +65,15 @@ class _SettingScreen extends State<SettingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      '程式版本:1.0.0',
+                      '程式版本: 1.0.0',
                       style: TextStyle(fontSize: fontSizeNorm),
                     ),
                     Text(
-                      '作者:Meng-Yuan Huang',
+                      'CBETA API版: ${apiVersion}',
+                      style: TextStyle(fontSize: fontSizeNorm),
+                    ),
+                    Text(
+                      '作者: Meng-Yuan Huang',
                       style: TextStyle(fontSize: fontSizeNorm),
                     ),
                     RichText(
@@ -93,7 +97,18 @@ class _SettingScreen extends State<SettingScreen> {
                             launch('https://github.com/MrMYHuang/cbetar');
                           },
                       ),
+                    ),                    RichText(
+                      text: TextSpan(
+                        text: 'CBETA API參考',
+                        style: TextStyle(
+                            color: Colors.blue, fontSize: fontSizeNorm),
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () {
+                            launch('http://cbdata.dila.edu.tw/v1.2/');
+                          },
+                      ),
                     )
+
                   ]),
             ),
           ],

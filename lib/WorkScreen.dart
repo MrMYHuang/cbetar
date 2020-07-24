@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'Globals.dart';
 import 'WebViewScreen.dart';
 import 'Work.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -22,7 +23,7 @@ class WorkScreen extends StatefulWidget {
 class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
   List<Work> works;
   final client = http.Client();
-  final url = "http://cbdata.dila.edu.tw/v1.2/works?work=";
+  final url = "${cbetaApiUrl}/works?work=";
 
   @override
   void initState() {
