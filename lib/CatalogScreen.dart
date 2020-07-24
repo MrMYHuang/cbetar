@@ -37,6 +37,7 @@ class _CatalogScreen extends State<CatalogScreen>
     try {
       final data = await fetchData(client, url + widget.path);
 
+      if (!mounted) return;
       setState(() {
         catalogs = List<Catalog>();
         data.forEach((element) {

@@ -53,6 +53,7 @@ class _WebViewScreen extends State<WebViewScreen>
     final file = await getLocalFile(fileName);
     if (file.existsSync()) {
       final temp = await loadLocalFile(fileName);
+      if (!mounted) return;
       setState(() {
         workHtml = temp;
       });
@@ -64,6 +65,8 @@ class _WebViewScreen extends State<WebViewScreen>
           "${cbetaApiUrl}/juans?edition=CBETA&work=${widget.work.work}&juan=${widget.work.juan}");
 
       saveFile(fileName, data[0]);
+
+      if (!mounted) return;
       setState(() {
         workHtml = data[0];
       });
@@ -137,6 +140,7 @@ class _WebViewScreen extends State<WebViewScreen>
     _controller.future.then((controller) {
       bookmarkNewUuid = Uuid().v4().toString();
       controller.evaluateJavascript("addBookmark('${bookmarkNewUuid}');");
+      if (!mounted) return;
       setState(() {
         hasBookmark = true;
       });
@@ -148,11 +152,13 @@ class _WebViewScreen extends State<WebViewScreen>
         (widget.bookmarkUuid == "") ? bookmarkNewUuid : widget.bookmarkUuid;
     _controller.future.then((controller) {
       controller.evaluateJavascript("delBookmark('${uuidToDel}');").then((a) {
+        store.dispatch(
+            MyActions(type: ActionTypes.DEL_BOOKMARK, value: uuidToDel));
+
+        if (!mounted) return;
         setState(() {
           hasBookmark = false;
         });
-        store.dispatch(
-            MyActions(type: ActionTypes.DEL_BOOKMARK, value: uuidToDel));
       });
     });
   }

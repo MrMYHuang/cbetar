@@ -43,6 +43,7 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
       data.forEach((element) {
         works.add(Work.fromJson(element));
       });
+      if (!mounted) return;
       setState(() {
         juans = works[0].juan_list.split(",").toList();
       });

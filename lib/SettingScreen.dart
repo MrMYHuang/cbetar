@@ -2,6 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:get_version/get_version.dart';
 import 'Redux.dart';
 import 'Globals.dart';
 
@@ -14,6 +15,27 @@ class SettingScreen extends StatefulWidget {
 
 class _SettingScreen extends State<SettingScreen> {
   double fontSize = 32;
+
+  @override
+  void initState() {
+    super.initState();
+
+    loadVersionInfo();
+  }
+
+  var _projectVersion = "";
+  void loadVersionInfo() async {
+    var projectVersion = "";
+    try {
+      projectVersion = await GetVersion.projectVersion;
+    } catch (e) {
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _projectVersion = projectVersion;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +87,7 @@ class _SettingScreen extends State<SettingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      '程式版本: 1.0.0',
+                      '程式版本: ${_projectVersion}',
                       style: TextStyle(fontSize: fontSizeNorm),
                     ),
                     Text(
