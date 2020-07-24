@@ -58,14 +58,18 @@ class _SettingScreen extends State<SettingScreen> {
             ListTile(
               leading: Icon(Icons.person),
               title: Text(
-                '作者',
+                '關於',
                 style: TextStyle(fontSize: fontSizeNorm),
               ),
               subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Meng-Yuan Huang',
+                      '作者:Meng-Yuan Huang',
+                      style: TextStyle(fontSize: fontSizeNorm),
+                    ),
+                    Text(
+                      '作者:Meng-Yuan Huang',
                       style: TextStyle(fontSize: fontSizeNorm),
                     ),
                     RichText(

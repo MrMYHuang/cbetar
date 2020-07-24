@@ -26,7 +26,8 @@ class WebViewScreen extends StatefulWidget {
   }
 }
 
-class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientMixin {
+class _WebViewScreen extends State<WebViewScreen>
+    with AutomaticKeepAliveClientMixin {
   var works = List<Work>();
   final client = http.Client();
   final url = "http://cbdata.dila.edu.tw/v1.2/works?work=";
@@ -36,7 +37,9 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
   void initState() {
     super.initState();
     fileName = "${widget.work.work}_juan${widget.work.juan}.html";
-    fetchHtml();
+    Future.delayed(Duration.zero, () {
+      fetchHtml();
+    });
   }
 
   var workHtml = "";
@@ -52,12 +55,23 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
       return;
     }
 
-    final data = await fetchData(client, "http://cbdata.dila.edu.tw/v1.2/juans?edition=CBETA&work=${widget.work.work}&juan=${widget.work.juan}");
-    
-    saveFile(fileName, data[0]);
-    setState(() {
-      workHtml = data[0];
-    });
+    try {
+      final data = await fetchData(client,
+          "http://cbdata.dila.edu.tw/v1.2/juans?edition=CBETA&work=${widget.work.work}&juan=${widget.work.juan}");
+
+      saveFile(fileName, data[0]);
+      setState(() {
+        workHtml = data[0];
+      });
+    } catch (e) {
+      final snackBar = SnackBar(
+        content: Text('連線逾時!請檢查網路!'),
+      );
+
+      // Find the Scaffold in the widget tree and use
+      // it to show a SnackBar.
+      Scaffold.of(context).showSnackBar(snackBar);
+    }
   }
 
   void updateWebView(WebViewController controller, double fontSize) async {
@@ -105,27 +119,41 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
     }
   </script>
     ''';
-    final String contentBase64 =
-    base64Encode(const Utf8Encoder().convert(styles + workHtml + scrollToBookmark));
+    final String contentBase64 = base64Encode(
+        const Utf8Encoder().convert(styles + workHtml + scrollToBookmark));
     await controller.loadUrl('$base64HtmlPrefix$contentBase64');
   }
 
   final Completer<WebViewController> _controller =
-  Completer<WebViewController>();
+      Completer<WebViewController>();
 
   var bookmarkNewUuid = "";
+
   void addBookmarkHandler() {
     _controller.future.then((controller) {
       bookmarkNewUuid = Uuid().v4().toString();
       controller.evaluateJavascript("addBookmark('${bookmarkNewUuid}');");
+      hadAdded = true;
     });
   }
 
-  void scrollToBookmarkHandler() {
+  void delBookmarkHandler() {
     _controller.future.then((controller) {
-      controller.evaluateJavascript("scrollToBookmark('${widget.bookmarkUuid}')");
+      controller
+          .evaluateJavascript("delBookmark('${widget.bookmarkUuid}');")
+          .then((a) {
+        hasDeleted = true;
+        store.dispatch(MyActions(
+            type: ActionTypes.DEL_BOOKMARK, value: widget.bookmarkUuid));
+      });
     });
   }
+
+  bool hadAdded = false;
+  bool hasDeleted = false;
+
+  bool get hasBookmark =>
+      hadAdded || (widget.bookmarkUuid != "" && !hasDeleted);
 
   @override
   Widget build(BuildContext context) {
@@ -148,20 +176,19 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.bookmark),
+            color: hasBookmark ? Colors.red : Colors.white,
             onPressed: () {
-              addBookmarkHandler();
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.pin_drop),
-            onPressed: () {
-              scrollToBookmarkHandler();
+              if (!hasBookmark) {
+                addBookmarkHandler();
+              } else {
+                delBookmarkHandler();
+              }
             },
           ),
         ],
       ),
       body: WebView(
-        //initialUrl: 'https://flutter.dev',
+          //initialUrl: 'https://flutter.dev',
           javascriptMode: JavascriptMode.unrestricted,
           javascriptChannels: <JavascriptChannel>[
             _saveHtmlJavascriptChannel(context),
@@ -181,8 +208,12 @@ class _WebViewScreen extends State<WebViewScreen> with AutomaticKeepAliveClientM
           final htmlStr = json["html"] as String;
           final selectedText = json["selectedText"] as String;
           saveFile(fileName, htmlStr);
-          final bookmarkNew = Bookmark(uuid: bookmarkNewUuid, work: widget.work, selectedText: selectedText);
-          store.dispatch(MyActions(type: ActionTypes.ADD_BOOKMARK, value: bookmarkNew));
+          final bookmarkNew = Bookmark(
+              uuid: bookmarkNewUuid,
+              work: widget.work,
+              selectedText: selectedText);
+          store.dispatch(
+              MyActions(type: ActionTypes.ADD_BOOKMARK, value: bookmarkNew));
         });
   }
 

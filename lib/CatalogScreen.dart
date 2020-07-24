@@ -20,25 +20,37 @@ class CatalogScreen extends StatefulWidget {
 
 class _CatalogScreen extends State<CatalogScreen>
     with AutomaticKeepAliveClientMixin {
-  List<Catalog> catalogs = List<Catalog>();
+  List<Catalog> catalogs;
   final client = http.Client();
   final url = "http://cbdata.dila.edu.tw/v1.2/catalog_entry?q=";
 
   @override
   void initState() {
     super.initState();
-    fetch();
+    Future.delayed(Duration.zero, () {
+      fetch();
+    });
   }
 
   void fetch() async {
-    final data = await fetchData(client, url + widget.path);
+    try {
+      final data = await fetchData(client, url + widget.path);
 
-    setState(() {
-      catalogs = List<Catalog>();
-      data.forEach((element) {
-        catalogs.add(Catalog.fromJson(element));
+      setState(() {
+        catalogs = List<Catalog>();
+        data.forEach((element) {
+          catalogs.add(Catalog.fromJson(element));
+        });
       });
-    });
+    } catch (e) {
+      final snackBar = SnackBar(
+        content: Text('連線逾時!請檢查網路!'),
+      );
+
+      // Find the Scaffold in the widget tree and use
+      // it to show a SnackBar.
+      Scaffold.of(context).showSnackBar(snackBar);
+    }
   }
 
   @override
@@ -46,15 +58,15 @@ class _CatalogScreen extends State<CatalogScreen>
     return StoreConnector<AppState, AppState>(converter: (store) {
       return store.state;
     }, builder: (BuildContext context, AppState vm) {
-      return Scaffold(
+      return catalogs == null ? Center(child: CircularProgressIndicator()) : Scaffold(
           appBar: AppBar(
             title: Text(widget.path),
           ),
           body: ListView.separated(
               separatorBuilder: (context, index) => Divider(
-                color: Colors.black,
-                thickness: 1,
-              ),
+                    color: Colors.black,
+                    thickness: 1,
+                  ),
               itemCount: catalogs.length,
               itemBuilder: (BuildContext context, int index) {
                 // access element from list using index

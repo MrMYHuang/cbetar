@@ -27,21 +27,33 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
   @override
   void initState() {
     super.initState();
-    fetch();
+    Future.delayed(Duration.zero, () {
+      fetch();
+    });
   }
 
   var juans = List<String>();
 
   void fetch() async {
-    final data = await fetchData(client, url + widget.work);
+    try {
+      final data = await fetchData(client, url + widget.work);
 
-    works = List<Work>();
-    data.forEach((element) {
-      works.add(Work.fromJson(element));
-    });
-    setState(() {
-      juans = works[0].juan_list.split(",").toList();
-    });
+      works = List<Work>();
+      data.forEach((element) {
+        works.add(Work.fromJson(element));
+      });
+      setState(() {
+        juans = works[0].juan_list.split(",").toList();
+      });
+    } catch (e) {
+      final snackBar = SnackBar(
+        content: Text('連線逾時!請檢查網路!'),
+      );
+
+      // Find the Scaffold in the widget tree and use
+      // it to show a SnackBar.
+      Scaffold.of(context).showSnackBar(snackBar);
+    }
   }
 
   @override
@@ -55,9 +67,9 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
           ),
           body: ListView.separated(
               separatorBuilder: (context, index) => Divider(
-                color: Colors.black,
-                thickness: 1,
-              ),
+                    color: Colors.black,
+                    thickness: 1,
+                  ),
               itemCount: juans.length,
               itemBuilder: (BuildContext context, int index) {
                 // access element from list using index
