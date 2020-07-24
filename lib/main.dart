@@ -49,13 +49,13 @@ class MyApp extends StatelessWidget {
                 Navigator(
                   onGenerateRoute: (RouteSettings routeSettings) {
                     return MaterialPageRoute(
-                        builder: (context) => CatalogScreen(path: "CBETA"));
+                        builder: (context) => BookmarkScreen());
                   },
                 ),
                 Navigator(
                   onGenerateRoute: (RouteSettings routeSettings) {
                     return MaterialPageRoute(
-                        builder: (context) => BookmarkScreen());
+                        builder: (context) => CatalogScreen(path: "CBETA"));
                   },
                 ),
                 SettingScreen(),
@@ -65,8 +65,8 @@ class MyApp extends StatelessWidget {
               color: Colors.blueAccent,
               child: TabBar(
                 tabs: [
-                  Tab(icon: Icon(Icons.library_books)),
                   Tab(icon: Icon(Icons.bookmark)),
+                  Tab(icon: Icon(Icons.library_books)),
                   Tab(icon: Icon(Icons.settings)),
                 ],
               ),

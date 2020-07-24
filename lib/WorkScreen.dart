@@ -20,7 +20,7 @@ class WorkScreen extends StatefulWidget {
 }
 
 class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
-  var works = List<Work>();
+  List<Work> works;
   final client = http.Client();
   final url = "http://cbdata.dila.edu.tw/v1.2/works?work=";
 
@@ -61,7 +61,7 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
     return StoreConnector<AppState, AppState>(converter: (store) {
       return store.state;
     }, builder: (BuildContext context, AppState vm) {
-      return Scaffold(
+      return works == null ? Center(child: CircularProgressIndicator()) : Scaffold(
           appBar: AppBar(
             title: Text(widget.work),
           ),

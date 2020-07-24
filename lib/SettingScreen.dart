@@ -65,7 +65,7 @@ class _SettingScreen extends State<SettingScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      '作者:Meng-Yuan Huang',
+                      '程式版本:1.0.0',
                       style: TextStyle(fontSize: fontSizeNorm),
                     ),
                     Text(
