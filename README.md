@@ -1,16 +1,13 @@
-# cbetar
+# CBETA電子佛典閱讀器(非官方)
 
-A new Flutter application.
+## 介紹
 
-## Getting Started
+CBETA電子佛典閱讀器(非官方)，使用CBETA API存取電子佛經，支援書籤、離線瀏覽、字型調整。程式碼為開放，可自由下載修改。
 
-This project is a starting point for a Flutter application.
+## 程式
 
-A few resources to get you started if this is your first Flutter project:
+使用Flutter開發。目前主要開發Android版，未來希望能支援iOS, macOS, Linux, Windows。
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+## 隱私政策聲明
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+此app無收集使用者個人資訊。
