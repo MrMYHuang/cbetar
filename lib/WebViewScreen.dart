@@ -34,9 +34,12 @@ class _WebViewScreen extends State<WebViewScreen>
   final url = "${cbetaApiUrl}/works?work=";
   var fileName = "";
 
+  bool hasBookmark;
+
   @override
   void initState() {
     super.initState();
+    hasBookmark = (widget.bookmarkUuid != "");
     fileName = "${widget.work.work}_juan${widget.work.juan}.html";
     Future.delayed(Duration.zero, () {
       fetchHtml();
@@ -134,27 +137,25 @@ class _WebViewScreen extends State<WebViewScreen>
     _controller.future.then((controller) {
       bookmarkNewUuid = Uuid().v4().toString();
       controller.evaluateJavascript("addBookmark('${bookmarkNewUuid}');");
-      hadAdded = true;
-    });
-  }
-
-  void delBookmarkHandler() {
-    _controller.future.then((controller) {
-      controller
-          .evaluateJavascript("delBookmark('${widget.bookmarkUuid}');")
-          .then((a) {
-        hasDeleted = true;
-        store.dispatch(MyActions(
-            type: ActionTypes.DEL_BOOKMARK, value: widget.bookmarkUuid));
+      setState(() {
+        hasBookmark = true;
       });
     });
   }
 
-  bool hadAdded = false;
-  bool hasDeleted = false;
-
-  bool get hasBookmark =>
-      hadAdded || (widget.bookmarkUuid != "" && !hasDeleted);
+  void delBookmarkHandler() {
+    final uuidToDel =
+        (widget.bookmarkUuid == "") ? bookmarkNewUuid : widget.bookmarkUuid;
+    _controller.future.then((controller) {
+      controller.evaluateJavascript("delBookmark('${uuidToDel}');").then((a) {
+        setState(() {
+          hasBookmark = false;
+        });
+        store.dispatch(
+            MyActions(type: ActionTypes.DEL_BOOKMARK, value: uuidToDel));
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

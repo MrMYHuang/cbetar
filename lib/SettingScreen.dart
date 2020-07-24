@@ -89,7 +89,7 @@ class _SettingScreen extends State<SettingScreen> {
                     ),
                     RichText(
                       text: TextSpan(
-                        text: '開放原始碼',
+                        text: '開放原始碼(含說明)',
                         style: TextStyle(
                             color: Colors.blue, fontSize: fontSizeNorm),
                         recognizer: TapGestureRecognizer()
@@ -97,9 +97,10 @@ class _SettingScreen extends State<SettingScreen> {
                             launch('https://github.com/MrMYHuang/cbetar');
                           },
                       ),
-                    ),                    RichText(
+                    ),
+                    RichText(
                       text: TextSpan(
-                        text: 'CBETA API參考',
+                        text: 'CBETA API參考文件',
                         style: TextStyle(
                             color: Colors.blue, fontSize: fontSizeNorm),
                         recognizer: TapGestureRecognizer()
@@ -108,7 +109,6 @@ class _SettingScreen extends State<SettingScreen> {
                           },
                       ),
                     )
-
                   ]),
             ),
           ],
