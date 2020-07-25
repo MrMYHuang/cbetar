@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cbetar/CatalogScreen.dart';
 import 'package:cbetar/BookmarkScreen.dart';
+import 'package:cbetar/Globals.dart';
 import 'package:cbetar/Utilities.dart';
 import 'SettingScreen.dart';
 
@@ -53,8 +54,10 @@ class MyApp extends StatelessWidget {
                   },
                 ),
                 Navigator(
+                  initialRoute: '/',
                   onGenerateRoute: (RouteSettings routeSettings) {
                     return MaterialPageRoute(
+                        settings: RouteSettings(name: "/CatalogHome"),
                         builder: (context) => CatalogScreen(path: "CBETA"));
                   },
                 ),

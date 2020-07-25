@@ -2,47 +2,48 @@ import 'package:cbetar/Utilities.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_redux/flutter_redux.dart';
+import 'CatalogScreen.dart';
 import 'Globals.dart';
 import 'Redux.dart';
 
-import 'Catalog.dart';
-import 'SearchScreen.dart';
+import 'Search.dart';
+import 'Work.dart';
 import 'WorkScreen.dart';
 
-class CatalogScreen extends StatefulWidget {
-  final String path;
+class SearchScreen extends StatefulWidget {
+  final String keyword;
 
-  CatalogScreen({Key key, this.path}) : super(key: key);
+  SearchScreen({Key key, this.keyword}) : super(key: key);
 
   @override
-  _CatalogScreen createState() {
-    return _CatalogScreen();
+  _SearchScreen createState() {
+    return _SearchScreen();
   }
 }
 
-class _CatalogScreen extends State<CatalogScreen>
+class _SearchScreen extends State<SearchScreen>
     with AutomaticKeepAliveClientMixin {
-  List<Catalog> catalogs;
+  List<Search> searches;
   final client = http.Client();
-  final url = "${cbetaApiUrl}/catalog_entry?q=";
 
   @override
   void initState() {
     super.initState();
     Future.delayed(Duration.zero, () {
-      fetch();
+      search(widget.keyword);
     });
   }
 
-  void fetch() async {
+  final searchUrl = "${cbetaApiUrl}/toc?q=";
+  void search(String text) async {
     try {
-      final data = await fetchData(client, url + widget.path);
+      final data = await fetchData(client, searchUrl + text);
 
       if (!mounted) return;
       setState(() {
-        catalogs = List<Catalog>();
+        searches = List<Search>();
         data.forEach((element) {
-          catalogs.add(Catalog.fromJson(element));
+          searches.add(Search.fromJson(element));
         });
       });
     } catch (e) {
@@ -63,54 +64,48 @@ class _CatalogScreen extends State<CatalogScreen>
     }, builder: (BuildContext context, AppState vm) {
       return Scaffold(
           appBar: AppBar(
-            title: Text("目錄 - " + widget.path),
+            title: Text("搜尋 - ${widget.keyword}"),
             actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.home),
-                onPressed: () async {
-                  Navigator.popUntil(
-                      context, ModalRoute.withName('/CatalogHome'));
-                },
-              ),
               IconButton(
                 icon: Icon(Icons.search),
                 onPressed: () async {
-                  final searchText =
-                      await asyncInputDialog(context, '搜尋經文', '輸入搜尋', '例:金剛經');
+                  final searchText = await asyncInputDialog(context, '搜尋經文', '輸入搜尋', '例:金剛經');
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                        pageBuilder: (context, animation1, animation2) =>
+                        pageBuilder:
+                            (context, animation1, animation2) =>
                             SearchScreen(keyword: searchText)),
                   );
                 },
               ),
             ],
           ),
-          body: catalogs == null
+          body: searches == null
               ? Center(child: CircularProgressIndicator())
               : ListView.separated(
                   separatorBuilder: (context, index) => Divider(
                         color: Colors.black,
                         thickness: 1,
                       ),
-                  itemCount: catalogs.length,
+                  itemCount: searches.length,
                   itemBuilder: (BuildContext context, int index) {
                     // access element from list using index
+                    bool isCatalog = searches[index].type == 'catalog';
                     // you can create and return a widget of your choice
                     return GestureDetector(
                       child: Text(
-                        catalogs[index].label,
+                        isCatalog ? searches[index].label : "${searches[index].title}\n作者:${searches[index].creators ?? "?"}",
                         style: TextStyle(fontSize: 40),
                       ),
                       onTap: () {
-                        if (catalogs[index].work == null) {
+                        if (isCatalog) {
                           Navigator.push(
                             context,
                             PageRouteBuilder(
                                 pageBuilder:
                                     (context, animation1, animation2) =>
-                                        CatalogScreen(path: catalogs[index].n)),
+                                        CatalogScreen(path: searches[index].n)),
                           );
                         } else {
                           Navigator.push(
@@ -118,7 +113,7 @@ class _CatalogScreen extends State<CatalogScreen>
                             PageRouteBuilder(
                                 pageBuilder:
                                     (context, animation1, animation2) =>
-                                        WorkScreen(work: catalogs[index].work)),
+                                        WorkScreen(work: searches[index].work)),
                           );
                         }
                       },

@@ -171,9 +171,7 @@ class _WebViewScreen extends State<WebViewScreen>
       _controller.future.then((controller) {
         updateWebView(controller, vm.fontSize);
       });
-      return workHtml == ""
-          ? Center(child: CircularProgressIndicator())
-          : _webviewScreen();
+      return _webviewScreen();
     });
   }
 
@@ -195,16 +193,18 @@ class _WebViewScreen extends State<WebViewScreen>
           ),
         ],
       ),
-      body: WebView(
-          //initialUrl: 'https://flutter.dev',
-          javascriptMode: JavascriptMode.unrestricted,
-          javascriptChannels: <JavascriptChannel>[
-            _saveHtmlJavascriptChannel(context),
-          ].toSet(),
-          onWebViewCreated: (WebViewController webViewController) {
-            _controller.complete(webViewController);
-          },
-          gestureRecognizers: {Factory(() => EagerGestureRecognizer())}),
+      body: workHtml == ""
+          ? Center(child: CircularProgressIndicator())
+          : WebView(
+              //initialUrl: 'https://flutter.dev',
+              javascriptMode: JavascriptMode.unrestricted,
+              javascriptChannels: <JavascriptChannel>[
+                _saveHtmlJavascriptChannel(context),
+              ].toSet(),
+              onWebViewCreated: (WebViewController webViewController) {
+                _controller.complete(webViewController);
+              },
+              gestureRecognizers: {Factory(() => EagerGestureRecognizer())}),
     );
   }
 

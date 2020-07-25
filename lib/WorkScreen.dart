@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'Globals.dart';
+import 'SearchScreen.dart';
 import 'WebViewScreen.dart';
 import 'Work.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -63,36 +64,59 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
     return StoreConnector<AppState, AppState>(converter: (store) {
       return store.state;
     }, builder: (BuildContext context, AppState vm) {
-      return works == null ? Center(child: CircularProgressIndicator()) : Scaffold(
+      return Scaffold(
           appBar: AppBar(
             title: Text(widget.work),
+            actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.home),
+                onPressed: () async {
+                  Navigator.popUntil(context, ModalRoute.withName('/CatalogHome'));
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.search),
+                onPressed: () async {
+                  final searchText = await asyncInputDialog(context, '搜尋經文', '輸入搜尋', '例:金剛經');
+                  Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                        pageBuilder:
+                            (context, animation1, animation2) =>
+                            SearchScreen(keyword: searchText)),
+                  );
+                },
+              ),
+            ],
           ),
-          body: ListView.separated(
-              separatorBuilder: (context, index) => Divider(
-                    color: Colors.black,
-                    thickness: 1,
-                  ),
-              itemCount: juans.length,
-              itemBuilder: (BuildContext context, int index) {
-                // access element from list using index
-                // you can create and return a widget of your choice
-                return GestureDetector(
-                  child: Text(
-                    "卷${juans[index]}",
-                    style: TextStyle(fontSize: 40),
-                  ),
-                  onTap: () {
-                    var work = works[0];
-                    work.juan = int.parse(juans[index]);
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                          pageBuilder: (context, animation1, animation2) =>
-                              WebViewScreen(work: work)),
+          body: works == null
+              ? Center(child: CircularProgressIndicator())
+              : ListView.separated(
+                  separatorBuilder: (context, index) => Divider(
+                        color: Colors.black,
+                        thickness: 1,
+                      ),
+                  itemCount: juans.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    // access element from list using index
+                    // you can create and return a widget of your choice
+                    return GestureDetector(
+                      child: Text(
+                        "卷${juans[index]}",
+                        style: TextStyle(fontSize: 40),
+                      ),
+                      onTap: () {
+                        var work = works[0];
+                        work.juan = int.parse(juans[index]);
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                              pageBuilder: (context, animation1, animation2) =>
+                                  WebViewScreen(work: work)),
+                        );
+                      },
                     );
-                  },
-                );
-              }));
+                  }));
     });
   }
 
