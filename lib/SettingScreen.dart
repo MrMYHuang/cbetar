@@ -67,7 +67,7 @@ class _SettingScreen extends State<SettingScreen> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.help),
+              leading: Icon(Icons.star),
               title: Text(
                 '特色',
                 style: TextStyle(fontSize: fontSizeNorm),
@@ -78,7 +78,7 @@ class _SettingScreen extends State<SettingScreen> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.person),
+              leading: Icon(Icons.help),
               title: Text(
                 '關於',
                 style: TextStyle(fontSize: fontSizeNorm),
@@ -111,7 +111,7 @@ class _SettingScreen extends State<SettingScreen> {
                     ),
                     RichText(
                       text: TextSpan(
-                        text: '開放原始碼(含說明)',
+                        text: '操作說明與開放原始碼',
                         style: TextStyle(
                             color: Colors.blue, fontSize: fontSizeNorm),
                         recognizer: TapGestureRecognizer()
