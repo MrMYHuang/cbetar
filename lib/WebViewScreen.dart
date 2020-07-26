@@ -279,15 +279,6 @@ class _WebViewScreen extends State<WebViewScreen>
     Navigator.popUntil(context, (route) => route.isFirst);
   }
 
-  void search() async {
-    final searchText = await asyncInputDialog(context, '搜尋經文', '輸入搜尋', '例:金剛經');
-    Navigator.push(
-        context,
-        PageRouteBuilder(
-            pageBuilder: (context, animation1, animation2) =>
-                SearchScreen(keyword: searchText)));
-  }
-
   void _select(Choice choice) {
     switch (choice.type) {
       case MenuActions.refresh:
@@ -297,7 +288,7 @@ class _WebViewScreen extends State<WebViewScreen>
         gotoHome();
         break;
       case MenuActions.search:
-        search();
+        searchCbeta(context);
         break;
     }
   }

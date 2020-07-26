@@ -75,14 +75,7 @@ class _SearchScreen extends State<SearchScreen>
               IconButton(
                 icon: Icon(Icons.search),
                 onPressed: () async {
-                  final searchText = await asyncInputDialog(context, '搜尋經文', '輸入搜尋', '例:金剛經');
-                  Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                        pageBuilder:
-                            (context, animation1, animation2) =>
-                            SearchScreen(keyword: searchText)),
-                  );
+                  searchCbeta(context);
                 },
               ),
             ],
