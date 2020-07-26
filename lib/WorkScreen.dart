@@ -23,7 +23,9 @@ class WorkScreen extends StatefulWidget {
 
 class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
   List<Work> works;
+  var title = "";
   final client = http.Client();
+  bool get workFetchDone => works != null;
   final url = "${cbetaApiUrl}/works?work=";
 
   @override
@@ -36,6 +38,8 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
 
   var juans = List<String>();
 
+  var fetchFail = false;
+
   void fetch() async {
     try {
       final data = await fetchData(client, url + widget.work);
@@ -46,16 +50,14 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
       });
       if (!mounted) return;
       setState(() {
+        title = works[0].title;
         juans = works[0].juan_list.split(",").toList();
       });
     } catch (e) {
-      final snackBar = SnackBar(
-        content: Text('連線逾時!請檢查網路!'),
-      );
-
-      // Find the Scaffold in the widget tree and use
-      // it to show a SnackBar.
-      Scaffold.of(context).showSnackBar(snackBar);
+      if (!mounted) return;
+      setState(() {
+        fetchFail = true;
+      });
     }
   }
 
@@ -66,57 +68,72 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
     }, builder: (BuildContext context, AppState vm) {
       return Scaffold(
           appBar: AppBar(
-            title: Text(widget.work),
+            title: Text(title),
             actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: () async {
+                  fetchFail = false;
+                  fetch();
+                },
+              ),
               IconButton(
                 icon: Icon(Icons.home),
                 onPressed: () async {
-                  Navigator.popUntil(context, ModalRoute.withName('/CatalogHome'));
+                  Navigator.popUntil(context, (route) => route.isFirst);
                 },
               ),
               IconButton(
                 icon: Icon(Icons.search),
                 onPressed: () async {
-                  final searchText = await asyncInputDialog(context, '搜尋經文', '輸入搜尋', '例:金剛經');
+                  final searchText =
+                      await asyncInputDialog(context, '搜尋經文', '輸入搜尋', '例:金剛經');
                   Navigator.push(
                     context,
                     PageRouteBuilder(
-                        pageBuilder:
-                            (context, animation1, animation2) =>
+                        pageBuilder: (context, animation1, animation2) =>
                             SearchScreen(keyword: searchText)),
                   );
                 },
               ),
             ],
           ),
-          body: works == null
-              ? Center(child: CircularProgressIndicator())
-              : ListView.separated(
-                  separatorBuilder: (context, index) => Divider(
-                        color: Colors.black,
-                        thickness: 1,
-                      ),
-                  itemCount: juans.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    // access element from list using index
-                    // you can create and return a widget of your choice
-                    return GestureDetector(
-                      child: Text(
-                        "卷${juans[index]}",
-                        style: TextStyle(fontSize: 40),
-                      ),
-                      onTap: () {
-                        var work = works[0];
-                        work.juan = int.parse(juans[index]);
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                              pageBuilder: (context, animation1, animation2) =>
-                                  WebViewScreen(work: work)),
+          body: fetchFail
+              ? Center(
+                  child: Text(
+                    '網路連線異常!',
+                    style: TextStyle(fontSize: fontSizeLarge),
+                  ),
+                )
+              : !workFetchDone
+                  ? Center(child: CircularProgressIndicator())
+                  : ListView.separated(
+                      separatorBuilder: (context, index) => Divider(
+                            color: Colors.black,
+                            thickness: 1,
+                          ),
+                      itemCount: juans.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        // access element from list using index
+                        // you can create and return a widget of your choice
+                        return GestureDetector(
+                          child: Text(
+                            "卷${juans[index]}",
+                            style: TextStyle(fontSize: 40),
+                          ),
+                          onTap: () {
+                            var work = works[0];
+                            work.juan = int.parse(juans[index]);
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                  pageBuilder:
+                                      (context, animation1, animation2) =>
+                                          WebViewScreen(work: work)),
+                            );
+                          },
                         );
-                      },
-                    );
-                  }));
+                      }));
     });
   }
 

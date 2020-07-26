@@ -73,3 +73,34 @@ Future<String> asyncInputDialog(BuildContext context, String message, String fie
     },
   );
 }
+
+Future<bool> asyncYesNoDialog(BuildContext context, String title, String content) async {
+  return showDialog<bool>(
+    context: context,
+    barrierDismissible: true, // dialog is dismissible with a tap on the barrier
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title),
+        content: new Row(
+          children: <Widget>[
+            Text(content)
+          ],
+        ),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('取消'),
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+          ),
+          FlatButton(
+            child: Text('確定'),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}

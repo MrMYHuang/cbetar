@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 import 'Boormark.dart';
+import 'SearchScreen.dart';
 import 'Work.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -49,6 +50,8 @@ class _WebViewScreen extends State<WebViewScreen>
   var workHtml = "";
   final base64HtmlPrefix = 'data:text/html;base64,';
 
+  var fetchFail = false;
+
   void fetchHtml() async {
     final file = await getLocalFile(fileName);
     if (file.existsSync()) {
@@ -71,13 +74,10 @@ class _WebViewScreen extends State<WebViewScreen>
         workHtml = data[0];
       });
     } catch (e) {
-      final snackBar = SnackBar(
-        content: Text('連線逾時!請檢查網路!'),
-      );
-
-      // Find the Scaffold in the widget tree and use
-      // it to show a SnackBar.
-      Scaffold.of(context).showSnackBar(snackBar);
+      if (!mounted) return;
+      setState(() {
+        fetchFail = true;
+      });
     }
   }
 
@@ -178,7 +178,7 @@ class _WebViewScreen extends State<WebViewScreen>
   Widget _webviewScreen() {
     return Scaffold(
       appBar: AppBar(
-        title: Text("${widget.work.title} - 第${widget.work.juan}卷"),
+        title: Text("${widget.work.title}卷${widget.work.juan}"),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.bookmark),
@@ -191,20 +191,48 @@ class _WebViewScreen extends State<WebViewScreen>
               }
             },
           ),
+          PopupMenuButton<Choice>(
+            color: Colors.black,
+            onSelected: _select,
+            itemBuilder: (BuildContext context) {
+              return choices.map((Choice choice) {
+                return PopupMenuItem<Choice>(
+                    value: choice,
+                    child: Row(
+                      children: <Widget>[
+                        Icon(choice.icon),
+                        Text(
+                          "    ${choice.title}",
+                          style: TextStyle(color: Colors.white),
+                        )
+                      ],
+                    ));
+              }).toList();
+            },
+          ),
         ],
       ),
-      body: workHtml == ""
-          ? Center(child: CircularProgressIndicator())
-          : WebView(
-              //initialUrl: 'https://flutter.dev',
-              javascriptMode: JavascriptMode.unrestricted,
-              javascriptChannels: <JavascriptChannel>[
-                _saveHtmlJavascriptChannel(context),
-              ].toSet(),
-              onWebViewCreated: (WebViewController webViewController) {
-                _controller.complete(webViewController);
-              },
-              gestureRecognizers: {Factory(() => EagerGestureRecognizer())}),
+      body: fetchFail
+          ? Center(
+              child: Text(
+                '網路連線異常!',
+                style: TextStyle(fontSize: fontSizeLarge),
+              ),
+            )
+          : workHtml == ""
+              ? Center(child: CircularProgressIndicator())
+              : WebView(
+                  //initialUrl: 'https://flutter.dev',
+                  javascriptMode: JavascriptMode.unrestricted,
+                  javascriptChannels: <JavascriptChannel>[
+                    _saveHtmlJavascriptChannel(context),
+                  ].toSet(),
+                  onWebViewCreated: (WebViewController webViewController) {
+                    _controller.complete(webViewController);
+                  },
+                  gestureRecognizers: {
+                      Factory(() => EagerGestureRecognizer())
+                    }),
     );
   }
 
@@ -225,6 +253,61 @@ class _WebViewScreen extends State<WebViewScreen>
         });
   }
 
+  void refreshButtonAction() async {
+    final ok =
+        await asyncYesNoDialog(context, '確定更新經文?', '更新經文會刪除所有書籤!\n確定執行?');
+    if (ok) {
+      fetchFail = false;
+    }
+  }
+
+  void gotoHome() {
+    Navigator.popUntil(context, (route) => route.isFirst);
+  }
+
+  void search() async {
+    final searchText = await asyncInputDialog(context, '搜尋經文', '輸入搜尋', '例:金剛經');
+    Navigator.push(
+        context,
+        PageRouteBuilder(
+            pageBuilder: (context, animation1, animation2) =>
+                SearchScreen(keyword: searchText)));
+  }
+
+  void _select(Choice choice) {
+    switch (choice.type) {
+      case MenuActions.refresh:
+        refreshButtonAction();
+        break;
+      case MenuActions.home:
+        gotoHome();
+        break;
+      case MenuActions.search:
+        search();
+        break;
+    }
+  }
+
   @override
   bool get wantKeepAlive => true;
 }
+
+class Choice {
+  const Choice({this.type, this.title, this.icon});
+
+  final MenuActions type;
+  final String title;
+  final IconData icon;
+}
+
+enum MenuActions {
+  refresh,
+  home,
+  search,
+}
+
+const List<Choice> choices = const <Choice>[
+  const Choice(type: MenuActions.refresh, title: '更新', icon: Icons.refresh),
+  const Choice(type: MenuActions.home, title: '首頁', icon: Icons.home),
+  const Choice(type: MenuActions.search, title: '搜尋', icon: Icons.search),
+];

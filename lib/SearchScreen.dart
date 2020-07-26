@@ -67,6 +67,12 @@ class _SearchScreen extends State<SearchScreen>
             title: Text("搜尋 - ${widget.keyword}"),
             actions: <Widget>[
               IconButton(
+                icon: Icon(Icons.home),
+                onPressed: () async {
+                  Navigator.popUntil(context, (route) => route.isFirst);
+                },
+              ),
+              IconButton(
                 icon: Icon(Icons.search),
                 onPressed: () async {
                   final searchText = await asyncInputDialog(context, '搜尋經文', '輸入搜尋', '例:金剛經');

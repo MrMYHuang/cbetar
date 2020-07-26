@@ -1,4 +1,5 @@
 import 'package:cbetar/Utilities.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_redux/flutter_redux.dart';
@@ -34,6 +35,8 @@ class _CatalogScreen extends State<CatalogScreen>
     });
   }
 
+  var fetchFail = false;
+
   void fetch() async {
     try {
       final data = await fetchData(client, url + widget.path);
@@ -46,13 +49,10 @@ class _CatalogScreen extends State<CatalogScreen>
         });
       });
     } catch (e) {
-      final snackBar = SnackBar(
-        content: Text('連線逾時!請檢查網路!'),
-      );
-
-      // Find the Scaffold in the widget tree and use
-      // it to show a SnackBar.
-      Scaffold.of(context).showSnackBar(snackBar);
+      if (!mounted) return;
+      setState(() {
+        fetchFail = true;
+      });
     }
   }
 
@@ -63,13 +63,19 @@ class _CatalogScreen extends State<CatalogScreen>
     }, builder: (BuildContext context, AppState vm) {
       return Scaffold(
           appBar: AppBar(
-            title: Text("目錄 - " + widget.path),
+            title: Text("目錄"),
             actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: () async {
+                  fetchFail = false;
+                  fetch();
+                },
+              ),
               IconButton(
                 icon: Icon(Icons.home),
                 onPressed: () async {
-                  Navigator.popUntil(
-                      context, ModalRoute.withName('/CatalogHome'));
+                  Navigator.popUntil(context, (route) => route.isFirst);
                 },
               ),
               IconButton(
@@ -87,43 +93,50 @@ class _CatalogScreen extends State<CatalogScreen>
               ),
             ],
           ),
-          body: catalogs == null
-              ? Center(child: CircularProgressIndicator())
-              : ListView.separated(
-                  separatorBuilder: (context, index) => Divider(
-                        color: Colors.black,
-                        thickness: 1,
-                      ),
-                  itemCount: catalogs.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    // access element from list using index
-                    // you can create and return a widget of your choice
-                    return GestureDetector(
-                      child: Text(
-                        catalogs[index].label,
-                        style: TextStyle(fontSize: 40),
-                      ),
-                      onTap: () {
-                        if (catalogs[index].work == null) {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                                pageBuilder:
-                                    (context, animation1, animation2) =>
+          body: fetchFail
+              ? Center(
+                  child: Text(
+                    '網路連線異常!',
+                    style: TextStyle(fontSize: fontSizeLarge),
+                  ),
+                )
+              : catalogs == null
+                  ? Center(child: CircularProgressIndicator())
+                  : ListView.separated(
+                      separatorBuilder: (context, index) => Divider(
+                            color: Colors.black,
+                            thickness: 1,
+                          ),
+                      itemCount: catalogs.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        // access element from list using index
+                        // you can create and return a widget of your choice
+                        return GestureDetector(
+                          child: Text(
+                            catalogs[index].label,
+                            style: TextStyle(fontSize: 40),
+                          ),
+                          onTap: () {
+                            if (catalogs[index].work == null) {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                    pageBuilder: (context, animation1,
+                                            animation2) =>
                                         CatalogScreen(path: catalogs[index].n)),
-                          );
-                        } else {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                                pageBuilder:
-                                    (context, animation1, animation2) =>
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                    pageBuilder: (context, animation1,
+                                            animation2) =>
                                         WorkScreen(work: catalogs[index].work)),
-                          );
-                        }
-                      },
-                    );
-                  }));
+                              );
+                            }
+                          },
+                        );
+                      }));
     });
   }
 

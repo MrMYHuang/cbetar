@@ -54,10 +54,8 @@ class MyApp extends StatelessWidget {
                   },
                 ),
                 Navigator(
-                  initialRoute: '/',
                   onGenerateRoute: (RouteSettings routeSettings) {
                     return MaterialPageRoute(
-                        settings: RouteSettings(name: "/CatalogHome"),
                         builder: (context) => CatalogScreen(path: "CBETA"));
                   },
                 ),
