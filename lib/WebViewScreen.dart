@@ -67,8 +67,6 @@ class _WebViewScreen extends State<WebViewScreen>
       final data = await fetchData(client,
           "${cbetaApiUrl}/juans?edition=CBETA&work=${widget.work.work}&juan=${widget.work.juan}");
 
-      saveFile(fileName, data[0]);
-
       if (!mounted) return;
       setState(() {
         workHtml = data[0];
@@ -91,40 +89,44 @@ class _WebViewScreen extends State<WebViewScreen>
       ''';
     }
     final String styles = '''
-    <style>
-    .lb {
-      display: none
-    }
-    .t {
-      font-size: ${fontSize}px
-    }
-    </style>
-  <script>
-    var bookmarkPrefix = 'bookmark_';
-    function addBookmark(uuid) {
-      var sel, range;
-      if (window.getSelection) {
-        sel = window.getSelection();
-        if (sel.rangeCount) {
-          range = sel.getRangeAt(0);
-          range.startContainer.parentElement.id = bookmarkPrefix + uuid;
-          var msg = JSON.stringify({selectedText: sel.toString(), html: document.body.outerHTML}) 
-          SaveHtml.postMessage(msg);
-        }
+      <style>
+      .lb {
+        display: none
       }
-    }
+      .t {
+        font-size: ${fontSize}px
+      }
+      </style>
+      <script>
+        var bookmarkPrefix = 'bookmark_';
+        function addBookmark(uuid) {
+          var sel, range;
+          if (window.getSelection) {
+            sel = window.getSelection();
+            if (sel.rangeCount) {
+              range = sel.getRangeAt(0);
+              range.startContainer.parentElement.id = bookmarkPrefix + uuid;
+              var msg = JSON.stringify({status: 'ok', selectedText: sel.toString(), html: document.body.outerHTML}); 
+              SaveHtml.postMessage(msg);
+              return;
+            }
+          }
     
-    function delBookmark(uuid) {
-      var oldBookmark = document.getElementById(bookmarkPrefix + uuid);
-      if (oldBookmark) {
-        oldBookmark.id = '';
-      }
-    }
-
-    function scrollToBookmark(uuid) {
-      document.getElementById(bookmarkPrefix + uuid).scrollIntoView();
-    }
-  </script>
+          SaveHtml.postMessage(JSON.stringify({status: 'error'}));    
+          return;
+        }
+        
+        function delBookmark(uuid) {
+          var oldBookmark = document.getElementById(bookmarkPrefix + uuid);
+          if (oldBookmark) {
+            oldBookmark.id = '';
+          }
+        }
+    
+        function scrollToBookmark(uuid) {
+          document.getElementById(bookmarkPrefix + uuid).scrollIntoView();
+        }
+      </script>
     ''';
     final String contentBase64 = base64Encode(
         const Utf8Encoder().convert(styles + workHtml + scrollToBookmark));
@@ -140,10 +142,6 @@ class _WebViewScreen extends State<WebViewScreen>
     _controller.future.then((controller) {
       bookmarkNewUuid = Uuid().v4().toString();
       controller.evaluateJavascript("addBookmark('${bookmarkNewUuid}');");
-      if (!mounted) return;
-      setState(() {
-        hasBookmark = true;
-      });
     });
   }
 
@@ -152,8 +150,9 @@ class _WebViewScreen extends State<WebViewScreen>
         (widget.bookmarkUuid == "") ? bookmarkNewUuid : widget.bookmarkUuid;
     _controller.future.then((controller) {
       controller.evaluateJavascript("delBookmark('${uuidToDel}');").then((a) {
-        store.dispatch(
-            MyActions(type: ActionTypes.DEL_BOOKMARK, value: uuidToDel));
+        store.dispatch(MyActions(
+            type: ActionTypes.DEL_BOOKMARK,
+            value: {"fileName": fileName, "uuid": uuidToDel}));
 
         if (!mounted) return;
         setState(() {
@@ -223,6 +222,7 @@ class _WebViewScreen extends State<WebViewScreen>
               ? Center(child: CircularProgressIndicator())
               : WebView(
                   //initialUrl: 'https://flutter.dev',
+                  //debuggingEnabled: true,
                   javascriptMode: JavascriptMode.unrestricted,
                   javascriptChannels: <JavascriptChannel>[
                     _saveHtmlJavascriptChannel(context),
@@ -241,15 +241,27 @@ class _WebViewScreen extends State<WebViewScreen>
         name: 'SaveHtml',
         onMessageReceived: (JavascriptMessage message) {
           final json = JsonDecoder().convert(message.message);
+
+          if(json["status"] == 'error') {
+            hasBookmark = false;
+            asyncYesDialog(context, '書籤新增失敗', '請確認是否已選擇一段文字，再新增書籤!');
+            return;
+          }
+
           final htmlStr = json["html"] as String;
           final selectedText = json["selectedText"] as String;
-          saveFile(fileName, htmlStr);
           final bookmarkNew = Bookmark(
               uuid: bookmarkNewUuid,
               work: widget.work,
-              selectedText: selectedText);
+              selectedText: selectedText,
+              fileName: fileName);
           store.dispatch(
-              MyActions(type: ActionTypes.ADD_BOOKMARK, value: bookmarkNew));
+              MyActions(type: ActionTypes.ADD_BOOKMARK, value: {"fileName": fileName, "htmlStr": htmlStr, "bookmark": bookmarkNew}));
+
+          if (!mounted) return;
+          setState(() {
+            hasBookmark = true;
+          });
         });
   }
 
@@ -258,6 +270,8 @@ class _WebViewScreen extends State<WebViewScreen>
         await asyncYesNoDialog(context, '確定更新經文?', '更新經文會刪除所有書籤!\n確定執行?');
     if (ok) {
       fetchFail = false;
+      hasBookmark = false;
+      fetchHtml();
     }
   }
 

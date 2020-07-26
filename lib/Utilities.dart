@@ -35,6 +35,16 @@ Future<bool> saveFile(String fileName, String text) async {
   return true;
 }
 
+Future<bool> delFile(String fileName) async {
+  final file = await getLocalFile(fileName);
+  try {
+    await file.deleteSync();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 Future<String> loadLocalFile(String fileName) async {
   final file = await getLocalFile(fileName);
   return file.readAsStringSync();
@@ -93,6 +103,31 @@ Future<bool> asyncYesNoDialog(BuildContext context, String title, String content
               Navigator.of(context).pop(false);
             },
           ),
+          FlatButton(
+            child: Text('確定'),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
+
+Future<bool> asyncYesDialog(BuildContext context, String title, String content) async {
+  return showDialog<bool>(
+    context: context,
+    barrierDismissible: true, // dialog is dismissible with a tap on the barrier
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title),
+        content: new Row(
+          children: <Widget>[
+            Flexible(child: Text(content),)
+          ],
+        ),
+        actions: <Widget>[
           FlatButton(
             child: Text('確定'),
             onPressed: () {

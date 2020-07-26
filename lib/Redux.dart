@@ -1,6 +1,8 @@
 import 'package:cbetar/Boormark.dart';
 import 'package:redux/redux.dart';
 
+import 'Utilities.dart';
+
 Store store;
 
 enum ActionTypes {
@@ -14,12 +16,21 @@ AppState reducer(AppState state, dynamic action) {
     case ActionTypes.CHANGE_FONT_SIZE:
       return AppState(fontSize: action.value, bookmarks: state.bookmarks);
     case ActionTypes.ADD_BOOKMARK:
+      saveFile(action.value['fileName'], action.value['htmlStr']);
       var bookmarksNew = new List<Bookmark>.from(state.bookmarks);
-      bookmarksNew.add(action.value);
+      bookmarksNew.add(action.value['bookmark']);
       return AppState(fontSize: state.fontSize, bookmarks: bookmarksNew);
     case ActionTypes.DEL_BOOKMARK:
       var bookmarksNew = new List<Bookmark>.from(state.bookmarks);
-      bookmarksNew.removeWhere((element) => element.uuid == action.value);
+      bookmarksNew.removeWhere((element) => element.uuid == action.value['uuid']);
+
+      try {
+        bookmarksNew.firstWhere((element) => element.fileName == action.value['fileName']);
+      } catch (e) {
+        // Delete the file if no bookmark anymore.
+        delFile(action.value['fileName']);
+      }
+
       return AppState(fontSize: state.fontSize, bookmarks: bookmarksNew);
     default:
       return state;
