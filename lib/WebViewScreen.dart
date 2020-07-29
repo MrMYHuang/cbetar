@@ -267,7 +267,7 @@ class _WebViewScreen extends State<WebViewScreen>
 
   void refreshButtonAction() async {
     final ok =
-        await asyncYesNoDialog(context, '確定更新經文?', '更新經文會刪除所有書籤!\n確定執行?');
+        await asyncYesNoDialog(context, '確定更新經文?', '更新經文會刪除此經文所有書籤!\n確定執行?');
     if (ok) {
       fetchFail = false;
       hasBookmark = false;

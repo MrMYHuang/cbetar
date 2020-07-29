@@ -47,7 +47,11 @@ class _SettingScreen extends State<SettingScreen> {
             MyActions(type: ActionTypes.CHANGE_FONT_SIZE, value: value)),
       );
     }, builder: (BuildContext context, _SettingScreenViewModel vm) {
-      return Scaffold(
+      return WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+      child: Scaffold(
         appBar: AppBar(
           title: Text("設定"),
         ),
@@ -73,7 +77,7 @@ class _SettingScreen extends State<SettingScreen> {
                 style: TextStyle(fontSize: fontSizeNorm),
               ),
               subtitle: Text(
-                '離線瀏覽、書籤功能、字型調整。',
+                '搜尋經文、書籤功能、離線瀏覽、字型調整。',
                 style: TextStyle(fontSize: fontSizeNorm),
               ),
             ),
@@ -135,7 +139,7 @@ class _SettingScreen extends State<SettingScreen> {
             ),
           ],
         ),
-      );
+      ));
     });
   }
 }
