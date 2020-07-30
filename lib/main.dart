@@ -7,6 +7,7 @@ import 'package:cbetar/Utilities.dart';
 import 'SettingScreen.dart';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_persist/redux_persist.dart';
@@ -15,6 +16,7 @@ import 'Redux.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  httpClient = http.Client();
   final persistor = Persistor<AppState>(
     storage: FileStorage(await getLocalFile('state.json')),
     // Or use other engines

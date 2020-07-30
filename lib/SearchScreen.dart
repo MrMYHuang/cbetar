@@ -24,7 +24,6 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreen extends State<SearchScreen>
     with AutomaticKeepAliveClientMixin {
   List<Search> searches;
-  final client = http.Client();
 
   @override
   void initState() {
@@ -37,7 +36,7 @@ class _SearchScreen extends State<SearchScreen>
   final searchUrl = "${cbetaApiUrl}/toc?q=";
   void search(String text) async {
     try {
-      final data = await fetchData(client, searchUrl + text);
+      final data = await fetchData(httpClient, searchUrl + text);
 
       if (!mounted) return;
       setState(() {

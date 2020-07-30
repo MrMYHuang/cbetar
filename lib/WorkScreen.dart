@@ -24,7 +24,6 @@ class WorkScreen extends StatefulWidget {
 class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
   List<Work> works;
   var title = "";
-  final client = http.Client();
   bool get workFetchDone => works != null;
   final url = "${cbetaApiUrl}/works?work=";
 
@@ -42,7 +41,7 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
 
   void fetch() async {
     try {
-      final data = await fetchData(client, url + widget.work);
+      final data = await fetchData(httpClient, url + widget.work);
 
       works = List<Work>();
       data.forEach((element) {

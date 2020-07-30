@@ -2,13 +2,11 @@ import 'package:cbetar/Utilities.dart';
 import 'package:cbetar/Work.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_redux/flutter_redux.dart';
 import 'Globals.dart';
 import 'Redux.dart';
 
 import 'Catalog.dart';
-import 'SearchScreen.dart';
 import 'WebViewScreen.dart';
 import 'WorkScreen.dart';
 
@@ -26,7 +24,6 @@ class CatalogScreen extends StatefulWidget {
 class _CatalogScreen extends State<CatalogScreen>
     with AutomaticKeepAliveClientMixin {
   List<Catalog> catalogs;
-  final client = http.Client();
   final url = "${cbetaApiUrl}/catalog_entry?q=";
 
   @override
@@ -41,7 +38,7 @@ class _CatalogScreen extends State<CatalogScreen>
 
   void fetch() async {
     try {
-      final data = await fetchData(client, url + widget.path);
+      final data = await fetchData(httpClient, url + widget.path);
 
       if (!mounted) return;
       setState(() {
@@ -112,7 +109,7 @@ class _CatalogScreen extends State<CatalogScreen>
                             style: TextStyle(fontSize: 40),
                           ),
                           onTap: () {
-                            if (catalogs[index].file != null) {
+                            if (catalogs[index].nodeType == "html") {
                               Navigator.push(
                                 context,
                                 PageRouteBuilder(

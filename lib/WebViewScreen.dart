@@ -32,7 +32,6 @@ class WebViewScreen extends StatefulWidget {
 class _WebViewScreen extends State<WebViewScreen>
     with AutomaticKeepAliveClientMixin {
   var works = List<Work>();
-  final client = http.Client();
   final url = "${cbetaApiUrl}/works?work=";
   var fileName = "";
 
@@ -66,7 +65,7 @@ class _WebViewScreen extends State<WebViewScreen>
 
     try {
       if (widget.path == "") {
-        final data = await fetchData(client,
+        final data = await fetchData(httpClient,
             "${cbetaApiUrl}/juans?edition=CBETA&work=${widget.work
                 .work}&juan=${widget.work.juan}");
 
@@ -75,9 +74,10 @@ class _WebViewScreen extends State<WebViewScreen>
           workHtml = data[0];
         });
       } else {
-        final data = await downloadFile(client, "${cbetaApiUrl}/${widget.path}");
-        var htmlStr = '';
-        if (data.toString().contains("charset=big5"))
+        final data = await downloadFile(httpClient, "${cbetaApiUrl}/${widget.path}");
+        final temp = String.fromCharCodes(data);
+        var htmlStr = "";
+        if (temp.contains("charset=big5"))
           htmlStr = await htmlBig5ToUtf8(data);
         else
           htmlStr = utf8.decode(data);
@@ -100,7 +100,7 @@ class _WebViewScreen extends State<WebViewScreen>
     if (hasBookmark) {
       scrollToBookmark = '''
       <script>
-      scrollToBookmark('${widget.bookmarkUuid}');
+      scrollToBookmark('${widget.bookmarkUuid != "" ? widget.bookmarkUuid : bookmarkNewUuid}');
       </script>
       ''';
     }
@@ -140,6 +140,7 @@ class _WebViewScreen extends State<WebViewScreen>
         }
     
         function scrollToBookmark(uuid) {
+          //console.log('Bookmark uuid: ' + bookmarkPrefix + uuid);
           document.getElementById(bookmarkPrefix + uuid).scrollIntoView();
         }
       </script>
@@ -157,6 +158,7 @@ class _WebViewScreen extends State<WebViewScreen>
   void addBookmarkHandler() {
     _controller.future.then((controller) {
       bookmarkNewUuid = Uuid().v4().toString();
+      hasBookmark = true;
       controller.evaluateJavascript("addBookmark('${bookmarkNewUuid}');");
     });
   }
@@ -264,7 +266,7 @@ class _WebViewScreen extends State<WebViewScreen>
             return;
           }
 
-          final htmlStr = json["html"] as String;
+          workHtml = json["html"] as String;
           final selectedText = json["selectedText"] as String;
           final bookmarkNew = Bookmark(
               uuid: bookmarkNewUuid,
@@ -272,7 +274,7 @@ class _WebViewScreen extends State<WebViewScreen>
               selectedText: selectedText,
               fileName: fileName);
           store.dispatch(
-              MyActions(type: ActionTypes.ADD_BOOKMARK, value: {"fileName": fileName, "htmlStr": htmlStr, "bookmark": bookmarkNew}));
+              MyActions(type: ActionTypes.ADD_BOOKMARK, value: {"fileName": fileName, "htmlStr": workHtml, "bookmark": bookmarkNew}));
 
           if (!mounted) return;
           setState(() {
