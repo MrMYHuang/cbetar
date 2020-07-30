@@ -81,7 +81,7 @@ class _WebViewScreen extends State<WebViewScreen>
 
   void updateWebView(WebViewController controller, double fontSize) async {
     var scrollToBookmark = '';
-    if (widget.bookmarkUuid != "") {
+    if (hasBookmark) {
       scrollToBookmark = '''
       <script>
       scrollToBookmark('${widget.bookmarkUuid}');
@@ -271,6 +271,12 @@ class _WebViewScreen extends State<WebViewScreen>
     if (ok) {
       fetchFail = false;
       hasBookmark = false;
+      delFile(fileName);
+      // Unfortunately, HTML bookmarks are lost after updating a stored HTML file.
+      // Thus, we also delete all its bookmarks in state.json.
+      store.dispatch(MyActions(
+          type: ActionTypes.DEL_BOOKMARKS,
+          value: {"fileName": fileName, }));
       fetchHtml();
     }
   }

@@ -8,7 +8,8 @@ Store store;
 enum ActionTypes {
   CHANGE_FONT_SIZE,
   ADD_BOOKMARK,
-  DEL_BOOKMARK
+  DEL_BOOKMARK,
+  DEL_BOOKMARKS, // Delete bookmarks of one file.
 }
 
 AppState reducer(AppState state, dynamic action) {
@@ -31,6 +32,10 @@ AppState reducer(AppState state, dynamic action) {
         delFile(action.value['fileName']);
       }
 
+      return AppState(fontSize: state.fontSize, bookmarks: bookmarksNew);
+    case ActionTypes.DEL_BOOKMARKS:
+      var bookmarksNew = new List<Bookmark>.from(state.bookmarks);
+      bookmarksNew.removeWhere((element) => element.fileName == action.value['fileName']);
       return AppState(fontSize: state.fontSize, bookmarks: bookmarksNew);
     default:
       return state;
