@@ -40,6 +40,7 @@ dev_dependencies:
   path_provider:
   uuid:
   get_version:
+  charset_converter: 1.0.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -1,4 +1,5 @@
 import 'package:cbetar/Utilities.dart';
+import 'package:cbetar/Work.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -8,6 +9,7 @@ import 'Redux.dart';
 
 import 'Catalog.dart';
 import 'SearchScreen.dart';
+import 'WebViewScreen.dart';
 import 'WorkScreen.dart';
 
 class CatalogScreen extends StatefulWidget {
@@ -110,7 +112,15 @@ class _CatalogScreen extends State<CatalogScreen>
                             style: TextStyle(fontSize: 40),
                           ),
                           onTap: () {
-                            if (catalogs[index].work == null) {
+                            if (catalogs[index].file != null) {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                    pageBuilder: (context, animation1,
+                                        animation2) =>
+                                        WebViewScreen(work: Work(work: catalogs[index].n, juan: 1, title: catalogs[index].label, juan_list: "1"), path: catalogs[index].file)),
+                              );
+                            }  else if (catalogs[index].work == null) {
                               Navigator.push(
                                 context,
                                 PageRouteBuilder(

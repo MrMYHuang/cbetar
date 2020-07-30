@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
+import 'package:charset_converter/charset_converter.dart';
 
 import 'Globals.dart';
 
@@ -17,6 +19,16 @@ Future<List<Object>> fetchData(http.Client client, String url) async {
 
   // Use the compute function to run parsePhotos in a separate isolate.
   return compute(parseData, response.body);
+}
+
+Future<Uint8List> downloadFile(http.Client client, String url) async {
+  var res = await client.get(Uri.parse(url));
+  return res.bodyBytes;
+}
+
+Future<String> htmlBig5ToUtf8(Uint8List data) async {
+  String decoded = await CharsetConverter.decode("Big5", data);
+  return decoded.replaceFirst("charset=big5", "charset=utf8");
 }
 
 List<Object> parseData(String responseBody) {

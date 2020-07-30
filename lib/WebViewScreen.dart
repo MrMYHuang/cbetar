@@ -18,9 +18,10 @@ import 'Redux.dart';
 
 class WebViewScreen extends StatefulWidget {
   final Work work;
+  final String path;
   final String bookmarkUuid;
 
-  WebViewScreen({Key key, this.work, this.bookmarkUuid = ""}) : super(key: key);
+  WebViewScreen({Key key, this.work, this.path = "", this.bookmarkUuid = ""}) : super(key: key);
 
   @override
   _WebViewScreen createState() {
@@ -64,13 +65,28 @@ class _WebViewScreen extends State<WebViewScreen>
     }
 
     try {
-      final data = await fetchData(client,
-          "${cbetaApiUrl}/juans?edition=CBETA&work=${widget.work.work}&juan=${widget.work.juan}");
+      if (widget.path == "") {
+        final data = await fetchData(client,
+            "${cbetaApiUrl}/juans?edition=CBETA&work=${widget.work
+                .work}&juan=${widget.work.juan}");
 
-      if (!mounted) return;
-      setState(() {
-        workHtml = data[0];
-      });
+        if (!mounted) return;
+        setState(() {
+          workHtml = data[0];
+        });
+      } else {
+        final data = await downloadFile(client, "${cbetaApiUrl}/${widget.path}");
+        var htmlStr = '';
+        if (data.toString().contains("charset=big5"))
+          htmlStr = await htmlBig5ToUtf8(data);
+        else
+          htmlStr = utf8.decode(data);
+
+        if (!mounted) return;
+        setState(() {
+          workHtml = htmlStr;
+        });
+      }
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -93,7 +109,7 @@ class _WebViewScreen extends State<WebViewScreen>
       .lb {
         display: none
       }
-      .t {
+      .t, p {
         font-size: ${fontSize}px
       }
       </style>
