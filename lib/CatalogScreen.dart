@@ -96,7 +96,7 @@ class _CatalogScreen extends State<CatalogScreen>
                   ? Center(child: CircularProgressIndicator())
                   : ListView.separated(
                       separatorBuilder: (context, index) => Divider(
-                            color: Colors.black,
+                            color: vm.darkMode ? Colors.white : Colors.black,
                             thickness: 1,
                           ),
                       itemCount: catalogs.length,

@@ -28,76 +28,86 @@ void main() async {
   store = Store<AppState>(reducer,
       initialState: initialState ?? AppState(),
       middleware: [persistor.createMiddleware()]);
-  runApp(MyApp(
-    store: store,
-  ));
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  final Store<AppState> store;
+class MyApp extends StatefulWidget {
+  MyApp({Key key}) : super(key: key);
+
+  @override
+  _MyApp createState() {
+    return _MyApp();
+  }
+}
+
+class _MyApp extends State<MyApp> {
   final GlobalKey<NavigatorState> bookmarkNavigatorKey = GlobalKey();
   final GlobalKey<NavigatorState> catalogNavigatorKey = GlobalKey();
-
-  MyApp({Key key, this.store}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
       store: store,
-      child: MaterialApp(
-        home: DefaultTabController(
-          length: 3,
-          child: Builder(builder: (BuildContext context) {
-            return WillPopScope(
-              onWillPop: () async {
-                switch (DefaultTabController.of(context).index) {
-                  case 0:
-                    if (bookmarkNavigatorKey.currentState.canPop())
-                      bookmarkNavigatorKey.currentState.pop();
-                    break;
-                  case 1:
-                    if (catalogNavigatorKey.currentState.canPop())
-                      catalogNavigatorKey.currentState.pop();
-                    break;
-                }
-                return false;
-              },
-              child: Scaffold(
-                body: TabBarView(
-                  physics: NeverScrollableScrollPhysics(),
-                  children: [
-                    Navigator(
-                      key: bookmarkNavigatorKey,
-                      onGenerateRoute: (RouteSettings routeSettings) {
-                        return MaterialPageRoute(
-                            builder: (context) => BookmarkScreen());
-                      },
-                    ),
-                    Navigator(
-                      key: catalogNavigatorKey,
-                      onGenerateRoute: (RouteSettings routeSettings) {
-                        return MaterialPageRoute(
-                            builder: (context) => CatalogScreen(path: "CBETA"));
-                      },
-                    ),
-                    SettingScreen(),
-                  ],
-                ),
-                bottomNavigationBar: Container(
-                  color: Colors.blueAccent,
-                  child: TabBar(
-                    tabs: [
-                      Tab(icon: Icon(Icons.bookmark)),
-                      Tab(icon: Icon(Icons.library_books)),
-                      Tab(icon: Icon(Icons.settings)),
+      child: StoreConnector<AppState, AppState>(converter: (store) {
+        return store.state;
+      }, builder: (BuildContext context, AppState vm) {
+        return MaterialApp(
+          theme: store.state.darkMode ? ThemeData.dark() : ThemeData.light(),
+          home: DefaultTabController(
+            length: 3,
+            child: Builder(builder: (BuildContext context) {
+              return WillPopScope(
+                onWillPop: () async {
+                  switch (DefaultTabController.of(context).index) {
+                    case 0:
+                      if (bookmarkNavigatorKey.currentState.canPop())
+                        bookmarkNavigatorKey.currentState.pop();
+                      break;
+                    case 1:
+                      if (catalogNavigatorKey.currentState.canPop())
+                        catalogNavigatorKey.currentState.pop();
+                      break;
+                  }
+                  return false;
+                },
+                child: Scaffold(
+                  body: TabBarView(
+                    physics: NeverScrollableScrollPhysics(),
+                    children: [
+                      Navigator(
+                        key: bookmarkNavigatorKey,
+                        onGenerateRoute: (RouteSettings routeSettings) {
+                          return MaterialPageRoute(
+                              builder: (context) => BookmarkScreen());
+                        },
+                      ),
+                      Navigator(
+                        key: catalogNavigatorKey,
+                        onGenerateRoute: (RouteSettings routeSettings) {
+                          return MaterialPageRoute(
+                              builder: (context) =>
+                                  CatalogScreen(path: "CBETA"));
+                        },
+                      ),
+                      SettingScreen(),
                     ],
                   ),
+                  bottomNavigationBar: Container(
+                    color: Colors.blueAccent,
+                    child: TabBar(
+                      tabs: [
+                        Tab(icon: Icon(Icons.bookmark)),
+                        Tab(icon: Icon(Icons.library_books)),
+                        Tab(icon: Icon(Icons.settings)),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-            );
-          }),
-        ),
-      ),
+              );
+            }),
+          ),
+        );
+      }),
     );
   }
 }

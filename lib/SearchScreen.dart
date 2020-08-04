@@ -34,6 +34,7 @@ class _SearchScreen extends State<SearchScreen>
   }
 
   final searchUrl = "${cbetaApiUrl}/toc?q=";
+
   void search(String text) async {
     try {
       final data = await fetchData(httpClient, searchUrl + text);
@@ -83,7 +84,7 @@ class _SearchScreen extends State<SearchScreen>
               ? Center(child: CircularProgressIndicator())
               : ListView.separated(
                   separatorBuilder: (context, index) => Divider(
-                        color: Colors.black,
+                        color: vm.darkMode ? Colors.white : Colors.black,
                         thickness: 1,
                       ),
                   itemCount: searches.length,
@@ -93,7 +94,9 @@ class _SearchScreen extends State<SearchScreen>
                     // you can create and return a widget of your choice
                     return GestureDetector(
                       child: Text(
-                        isCatalog ? searches[index].label : "${searches[index].title}\n作者:${searches[index].creators ?? "?"}",
+                        isCatalog
+                            ? searches[index].label
+                            : "${searches[index].title}\n作者:${searches[index].creators ?? "?"}",
                         style: TextStyle(fontSize: 40),
                       ),
                       onTap: () {

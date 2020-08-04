@@ -24,12 +24,12 @@ class _SettingScreen extends State<SettingScreen> {
   }
 
   var _projectVersion = "";
+
   void loadVersionInfo() async {
     var projectVersion = "";
     try {
       projectVersion = await GetVersion.projectVersion;
-    } catch (e) {
-    }
+    } catch (e) {}
 
     if (!mounted) return;
     setState(() {
@@ -45,101 +45,114 @@ class _SettingScreen extends State<SettingScreen> {
         state: store.state,
         onChanged: (value) => store.dispatch(
             MyActions(type: ActionTypes.CHANGE_FONT_SIZE, value: value)),
+        onDarkModeChanged: (value) => store.dispatch(
+            MyActions(type: ActionTypes.CHANGE_DARK_MODE, value: value)),
       );
     }, builder: (BuildContext context, _SettingScreenViewModel vm) {
       return WillPopScope(
-        onWillPop: () async {
-          return false;
-        },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text("設定"),
-        ),
-        body: ListView(
-          children: <Widget>[
-            ListTile(
-              leading: Icon(Icons.format_size),
-              title: Slider(
-                  value: vm.state.fontSize,
-                  min: 10,
-                  max: 64,
-                  divisions: (64 - 10),
-                  onChanged: vm.onChanged),
-              subtitle: Text(
-                '字型大小:${vm.state.fontSize}',
-                style: TextStyle(fontSize: vm.state.fontSize),
-              ),
+          onWillPop: () async {
+            return false;
+          },
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text("設定"),
             ),
-            ListTile(
-              leading: Icon(Icons.star),
-              title: Text(
-                '特色',
-                style: TextStyle(fontSize: fontSizeNorm),
-              ),
-              subtitle: Text(
-                '搜尋經文、書籤功能、離線瀏覽、字型調整。',
-                style: TextStyle(fontSize: fontSizeNorm),
-              ),
-            ),
-            ListTile(
-              leading: Icon(Icons.help),
-              title: Text(
-                '關於',
-                style: TextStyle(fontSize: fontSizeNorm),
-              ),
-              subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      '程式版本: ${_projectVersion}',
-                      style: TextStyle(fontSize: fontSizeNorm),
-                    ),
-                    Text(
-                      'CBETA API版: ${apiVersion}',
-                      style: TextStyle(fontSize: fontSizeNorm),
-                    ),
-                    Text(
-                      '作者: Meng-Yuan Huang',
-                      style: TextStyle(fontSize: fontSizeNorm),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        text: 'myh@live.com',
-                        style: TextStyle(
-                            color: Colors.blue, fontSize: fontSizeNorm),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            launch('mailto:myh@live.com');
-                          },
-                      ),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        text: '操作說明與開放原始碼',
-                        style: TextStyle(
-                            color: Colors.blue, fontSize: fontSizeNorm),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            launch('https://github.com/MrMYHuang/cbetar');
-                          },
-                      ),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                        text: 'CBETA API參考文件',
-                        style: TextStyle(
-                            color: Colors.blue, fontSize: fontSizeNorm),
-                        recognizer: TapGestureRecognizer()
-                          ..onTap = () {
-                            launch('http://cbdata.dila.edu.tw/v1.2/');
-                          },
-                      ),
+            body: ListView(
+              children: <Widget>[
+                ListTile(
+                  leading: Icon(Icons.brightness_2),
+                  title: Row(children: [
+                    Expanded(child: Text('暗色模式', style: TextStyle(fontSize: fontSizeNorm))),
+                    Switch(
+                      value: vm.state.darkMode,
+                      onChanged: vm.onDarkModeChanged,
+                      activeColor: Colors.blueAccent,
                     )
                   ]),
+                ),
+                ListTile(
+                  leading: Icon(Icons.format_size),
+                  title: Slider(
+                      value: vm.state.fontSize,
+                      min: 10,
+                      max: 64,
+                      divisions: (64 - 10),
+                      onChanged: vm.onChanged),
+                  subtitle: Text(
+                    '字型大小:${vm.state.fontSize}',
+                    style: TextStyle(fontSize: vm.state.fontSize),
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(Icons.star),
+                  title: Text(
+                    '特色',
+                    style: TextStyle(fontSize: fontSizeNorm),
+                  ),
+                  subtitle: Text(
+                    '搜尋經文、書籤功能、離線瀏覽、暗色模式、字型調整。',
+                    style: TextStyle(fontSize: fontSizeNorm),
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(Icons.help),
+                  title: Text(
+                    '關於',
+                    style: TextStyle(fontSize: fontSizeNorm),
+                  ),
+                  subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          '程式版本: ${_projectVersion}',
+                          style: TextStyle(fontSize: fontSizeNorm),
+                        ),
+                        Text(
+                          'CBETA API版: ${apiVersion}',
+                          style: TextStyle(fontSize: fontSizeNorm),
+                        ),
+                        Text(
+                          '作者: Meng-Yuan Huang',
+                          style: TextStyle(fontSize: fontSizeNorm),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            text: 'myh@live.com',
+                            style: TextStyle(
+                                color: Colors.blue, fontSize: fontSizeNorm),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                launch('mailto:myh@live.com');
+                              },
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            text: '操作說明與開放原始碼',
+                            style: TextStyle(
+                                color: Colors.blue, fontSize: fontSizeNorm),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                launch('https://github.com/MrMYHuang/cbetar');
+                              },
+                          ),
+                        ),
+                        RichText(
+                          text: TextSpan(
+                            text: 'CBETA API參考文件',
+                            style: TextStyle(
+                                color: Colors.blue, fontSize: fontSizeNorm),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                launch('http://cbdata.dila.edu.tw/v1.2/');
+                              },
+                          ),
+                        )
+                      ]),
+                ),
+              ],
             ),
-          ],
-        ),
-      ));
+          ));
     });
   }
 }
@@ -147,6 +160,7 @@ class _SettingScreen extends State<SettingScreen> {
 class _SettingScreenViewModel {
   final AppState state;
   final void Function(double value) onChanged;
+  final void Function(bool value) onDarkModeChanged;
 
-  _SettingScreenViewModel({this.state, this.onChanged});
+  _SettingScreenViewModel({this.state, this.onChanged, this.onDarkModeChanged});
 }

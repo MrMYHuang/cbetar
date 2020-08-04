@@ -95,7 +95,7 @@ class _WebViewScreen extends State<WebViewScreen>
     }
   }
 
-  void updateWebView(WebViewController controller, double fontSize) async {
+  void updateWebView(WebViewController controller, double fontSize, bool darkMode) async {
     final platformFontSize = defaultTargetPlatform == TargetPlatform.iOS ? "${2 * fontSize}pt" : "${fontSize}px";
     var scrollToBookmark = '';
     if (hasBookmark) {
@@ -111,7 +111,11 @@ class _WebViewScreen extends State<WebViewScreen>
         display: none
       }
       .t, p {
-        font-size: ${platformFontSize}
+        font-size: ${platformFontSize};
+        color: ${darkMode ? "white" : "black"}
+      }
+      body {
+        background: ${darkMode ? "black" : "white"}
       }
       </style>
       <script>
@@ -147,7 +151,7 @@ class _WebViewScreen extends State<WebViewScreen>
       </script>
     ''';
     final String contentBase64 = base64Encode(
-        const Utf8Encoder().convert(workHtml + styles + scrollToBookmark));
+        const Utf8Encoder().convert(styles + workHtml + scrollToBookmark));
     await controller.loadUrl('$base64HtmlPrefix$contentBase64');
   }
 
@@ -187,7 +191,7 @@ class _WebViewScreen extends State<WebViewScreen>
       return store.state;
     }, builder: (BuildContext context, AppState vm) {
       _controller.future.then((controller) {
-        updateWebView(controller, vm.fontSize);
+        updateWebView(controller, vm.fontSize, vm.darkMode);
       });
       return _webviewScreen();
     });

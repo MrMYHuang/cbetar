@@ -24,6 +24,7 @@ class WorkScreen extends StatefulWidget {
 class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
   List<Work> works;
   var title = "";
+
   bool get workFetchDone => works != null;
   final url = "${cbetaApiUrl}/works?work=";
 
@@ -101,7 +102,7 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
                   ? Center(child: CircularProgressIndicator())
                   : ListView.separated(
                       separatorBuilder: (context, index) => Divider(
-                            color: Colors.black,
+                            color: vm.darkMode ? Colors.white : Colors.black,
                             thickness: 1,
                           ),
                       itemCount: juans.length,
