@@ -96,7 +96,7 @@ class _WebViewScreen extends State<WebViewScreen>
   }
 
   void updateWebView(WebViewController controller, double fontSize) async {
-    final platformFontSize = devicePixelRatio * fontSize;
+    final platformFontSize = defaultTargetPlatform == TargetPlatform.iOS ? "${2 * fontSize}pt" : "${fontSize}px";
     var scrollToBookmark = '';
     if (hasBookmark) {
       scrollToBookmark = '''
@@ -111,7 +111,7 @@ class _WebViewScreen extends State<WebViewScreen>
         display: none
       }
       .t, p {
-        font-size: ${platformFontSize}pt
+        font-size: ${platformFontSize}
       }
       </style>
       <script>
