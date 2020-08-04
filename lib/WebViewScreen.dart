@@ -6,11 +6,9 @@ import 'package:cbetar/Utilities.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 import 'Boormark.dart';
-import 'SearchScreen.dart';
 import 'Work.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -34,6 +32,7 @@ class _WebViewScreen extends State<WebViewScreen>
   var works = List<Work>();
   final url = "${cbetaApiUrl}/works?work=";
   var fileName = "";
+  var devicePixelRatio = 1.0;
 
   bool hasBookmark;
 
@@ -44,11 +43,12 @@ class _WebViewScreen extends State<WebViewScreen>
     fileName = "${widget.work.work}_juan${widget.work.juan}.html";
     Future.delayed(Duration.zero, () {
       fetchHtml();
+      devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
     });
   }
 
   var workHtml = "";
-  final base64HtmlPrefix = 'data:text/html;base64,';
+  final base64HtmlPrefix = 'data:text/html;charset=UTF-8;base64,';
 
   var fetchFail = false;
 
@@ -96,6 +96,7 @@ class _WebViewScreen extends State<WebViewScreen>
   }
 
   void updateWebView(WebViewController controller, double fontSize) async {
+    final platformFontSize = devicePixelRatio * fontSize;
     var scrollToBookmark = '';
     if (hasBookmark) {
       scrollToBookmark = '''
@@ -110,7 +111,7 @@ class _WebViewScreen extends State<WebViewScreen>
         display: none
       }
       .t, p {
-        font-size: ${fontSize}px
+        font-size: ${platformFontSize}pt
       }
       </style>
       <script>
@@ -146,7 +147,7 @@ class _WebViewScreen extends State<WebViewScreen>
       </script>
     ''';
     final String contentBase64 = base64Encode(
-        const Utf8Encoder().convert(styles + workHtml + scrollToBookmark));
+        const Utf8Encoder().convert(workHtml + styles + scrollToBookmark));
     await controller.loadUrl('$base64HtmlPrefix$contentBase64');
   }
 
