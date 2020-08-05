@@ -19,7 +19,8 @@ class WebViewScreen extends StatefulWidget {
   final String path;
   final String bookmarkUuid;
 
-  WebViewScreen({Key key, this.work, this.path = "", this.bookmarkUuid = ""}) : super(key: key);
+  WebViewScreen({Key key, this.work, this.path = "", this.bookmarkUuid = ""})
+      : super(key: key);
 
   @override
   _WebViewScreen createState() {
@@ -66,15 +67,15 @@ class _WebViewScreen extends State<WebViewScreen>
     try {
       if (widget.path == "") {
         final data = await fetchData(httpClient,
-            "${cbetaApiUrl}/juans?edition=CBETA&work=${widget.work
-                .work}&juan=${widget.work.juan}");
+            "${cbetaApiUrl}/juans?edition=CBETA&work=${widget.work.work}&juan=${widget.work.juan}");
 
         if (!mounted) return;
         setState(() {
           workHtml = data[0];
         });
       } else {
-        final data = await downloadFile(httpClient, "${cbetaApiUrl}/${widget.path}");
+        final data =
+            await downloadFile(httpClient, "${cbetaApiUrl}/${widget.path}");
         final temp = String.fromCharCodes(data);
         var htmlStr = "";
         if (temp.contains("charset=big5"))
@@ -95,30 +96,28 @@ class _WebViewScreen extends State<WebViewScreen>
     }
   }
 
-  void updateWebView(WebViewController controller, double fontSize, bool darkMode) async {
-    final platformFontSize = defaultTargetPlatform == TargetPlatform.iOS ? "${2 * fontSize}pt" : "${fontSize}px";
-    var scrollToBookmark = '';
-    if (hasBookmark) {
-      scrollToBookmark = '''
-      <script>
-      scrollToBookmark('${widget.bookmarkUuid != "" ? widget.bookmarkUuid : bookmarkNewUuid}');
-      </script>
-      ''';
-    }
-    final String styles = '''
+  void updateWebView(
+      WebViewController controller, double fontSize, bool darkMode) async {
+    final platformFontSize = defaultTargetPlatform == TargetPlatform.iOS
+        ? "${2 * fontSize}pt"
+        : "${fontSize}px";
+
+    final String cssStyles = '''
       <style>
       .lb {
         display: none
       }
       .t, p {
-        font-size: ${platformFontSize};
+        font-size: $platformFontSize;
         color: ${darkMode ? "white" : "black"}
       }
       body {
         background: ${darkMode ? "black" : "white"}
       }
       </style>
-      <script>
+      ''';
+
+    final jsScripts = '''<script>
         var bookmarkPrefix = 'bookmark_';
         function addBookmark(uuid) {
           var sel, range;
@@ -150,8 +149,15 @@ class _WebViewScreen extends State<WebViewScreen>
         }
       </script>
     ''';
+
+    // Note! Place CSS and scripts before and not after <html>,
+    // so document.body.outerHTML doesn't contains them.
+    // And thus the saved and then loaded HTML has no them.
+    // Thus, we save the checks a loaded HTML has injected CSS and scripts.
+    // It simplifies this program logics.
+    final workHtmlStylesScripts = cssStyles + jsScripts + workHtml;
     final String contentBase64 = base64Encode(
-        const Utf8Encoder().convert(styles + workHtml + scrollToBookmark));
+        const Utf8Encoder().convert(workHtmlStylesScripts));
     await controller.loadUrl('$base64HtmlPrefix$contentBase64');
   }
 
@@ -244,7 +250,6 @@ class _WebViewScreen extends State<WebViewScreen>
           : workHtml == ""
               ? Center(child: CircularProgressIndicator())
               : WebView(
-                  //initialUrl: 'https://flutter.dev',
                   //debuggingEnabled: true,
                   javascriptMode: JavascriptMode.unrestricted,
                   javascriptChannels: <JavascriptChannel>[
@@ -252,6 +257,13 @@ class _WebViewScreen extends State<WebViewScreen>
                   ].toSet(),
                   onWebViewCreated: (WebViewController webViewController) {
                     _controller.complete(webViewController);
+                  },
+                  onPageFinished: (msg) {
+                    _controller.future.then((controller) {
+                      controller.evaluateJavascript(hasBookmark
+                          ? "scrollToBookmark('${widget.bookmarkUuid != "" ? widget.bookmarkUuid : bookmarkNewUuid}')"
+                          : "");
+                    });
                   },
                   gestureRecognizers: {
                       Factory(() => EagerGestureRecognizer())
@@ -265,7 +277,7 @@ class _WebViewScreen extends State<WebViewScreen>
         onMessageReceived: (JavascriptMessage message) {
           final json = JsonDecoder().convert(message.message);
 
-          if(json["status"] == 'error') {
+          if (json["status"] == 'error') {
             hasBookmark = false;
             asyncYesDialog(context, '書籤新增失敗', '請確認是否已選擇一段文字，再新增書籤!');
             return;
@@ -278,8 +290,11 @@ class _WebViewScreen extends State<WebViewScreen>
               work: widget.work,
               selectedText: selectedText,
               fileName: fileName);
-          store.dispatch(
-              MyActions(type: ActionTypes.ADD_BOOKMARK, value: {"fileName": fileName, "htmlStr": workHtml, "bookmark": bookmarkNew}));
+          store.dispatch(MyActions(type: ActionTypes.ADD_BOOKMARK, value: {
+            "fileName": fileName,
+            "htmlStr": workHtml,
+            "bookmark": bookmarkNew
+          }));
 
           if (!mounted) return;
           setState(() {
@@ -297,9 +312,9 @@ class _WebViewScreen extends State<WebViewScreen>
       delFile(fileName);
       // Unfortunately, HTML bookmarks are lost after updating a stored HTML file.
       // Thus, we also delete all its bookmarks in state.json.
-      store.dispatch(MyActions(
-          type: ActionTypes.DEL_BOOKMARKS,
-          value: {"fileName": fileName, }));
+      store.dispatch(MyActions(type: ActionTypes.DEL_BOOKMARKS, value: {
+        "fileName": fileName,
+      }));
       fetchHtml();
     }
   }
