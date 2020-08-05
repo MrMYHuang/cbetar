@@ -1,4 +1,4 @@
-import 'package:cbetar/Boormark.dart';
+import 'package:cbetar/Bookmark.dart';
 import 'package:redux/redux.dart';
 
 import 'Utilities.dart';

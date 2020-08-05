@@ -1,13 +1,11 @@
 import 'package:cbetar/Utilities.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_redux/flutter_redux.dart';
 import 'CatalogScreen.dart';
 import 'Globals.dart';
 import 'Redux.dart';
 
 import 'Search.dart';
-import 'Work.dart';
 import 'WorkScreen.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -33,7 +31,7 @@ class _SearchScreen extends State<SearchScreen>
     });
   }
 
-  final searchUrl = "${cbetaApiUrl}/toc?q=";
+  final searchUrl = "$cbetaApiUrl/toc?q=";
 
   void search(String text) async {
     try {

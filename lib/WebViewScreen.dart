@@ -8,7 +8,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-import 'Boormark.dart';
+import 'Bookmark.dart';
 import 'Work.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -31,16 +31,17 @@ class WebViewScreen extends StatefulWidget {
 class _WebViewScreen extends State<WebViewScreen>
     with AutomaticKeepAliveClientMixin {
   var works = List<Work>();
-  final url = "${cbetaApiUrl}/works?work=";
+  final url = "$cbetaApiUrl/works?work=";
   var fileName = "";
   var devicePixelRatio = 1.0;
 
-  bool hasBookmark;
+  bool get hasBookmark {
+    return (store.state as AppState).bookmarks.firstWhere((element) => element.uuid == widget.bookmarkUuid || element.uuid == bookmarkNewUuid, orElse: () => null) != null;
+  }
 
   @override
   void initState() {
     super.initState();
-    hasBookmark = (widget.bookmarkUuid != "");
     fileName = "${widget.work.work}_juan${widget.work.juan}.html";
     Future.delayed(Duration.zero, () {
       fetchHtml();
@@ -67,7 +68,7 @@ class _WebViewScreen extends State<WebViewScreen>
     try {
       if (widget.path == "") {
         final data = await fetchData(httpClient,
-            "${cbetaApiUrl}/juans?edition=CBETA&work=${widget.work.work}&juan=${widget.work.juan}");
+            "$cbetaApiUrl/juans?edition=CBETA&work=${widget.work.work}&juan=${widget.work.juan}");
 
         if (!mounted) return;
         setState(() {
@@ -75,7 +76,7 @@ class _WebViewScreen extends State<WebViewScreen>
         });
       } else {
         final data =
-            await downloadFile(httpClient, "${cbetaApiUrl}/${widget.path}");
+            await downloadFile(httpClient, "$cbetaApiUrl/${widget.path}");
         final temp = String.fromCharCodes(data);
         var htmlStr = "";
         if (temp.contains("charset=big5"))
@@ -169,8 +170,7 @@ class _WebViewScreen extends State<WebViewScreen>
   void addBookmarkHandler() {
     _controller.future.then((controller) {
       bookmarkNewUuid = Uuid().v4().toString();
-      hasBookmark = true;
-      controller.evaluateJavascript("addBookmark('${bookmarkNewUuid}');");
+      controller.evaluateJavascript("addBookmark('$bookmarkNewUuid');");
     });
   }
 
@@ -178,15 +178,10 @@ class _WebViewScreen extends State<WebViewScreen>
     final uuidToDel =
         (widget.bookmarkUuid == "") ? bookmarkNewUuid : widget.bookmarkUuid;
     _controller.future.then((controller) {
-      controller.evaluateJavascript("delBookmark('${uuidToDel}');").then((a) {
+      controller.evaluateJavascript("delBookmark('$uuidToDel');").then((a) {
         store.dispatch(MyActions(
             type: ActionTypes.DEL_BOOKMARK,
             value: {"fileName": fileName, "uuid": uuidToDel}));
-
-        if (!mounted) return;
-        setState(() {
-          hasBookmark = false;
-        });
       });
     });
   }
@@ -278,7 +273,6 @@ class _WebViewScreen extends State<WebViewScreen>
           final json = JsonDecoder().convert(message.message);
 
           if (json["status"] == 'error') {
-            hasBookmark = false;
             asyncYesDialog(context, '書籤新增失敗', '請確認是否已選擇一段文字，再新增書籤!');
             return;
           }
@@ -295,11 +289,6 @@ class _WebViewScreen extends State<WebViewScreen>
             "htmlStr": workHtml,
             "bookmark": bookmarkNew
           }));
-
-          if (!mounted) return;
-          setState(() {
-            hasBookmark = true;
-          });
         });
   }
 
@@ -308,7 +297,6 @@ class _WebViewScreen extends State<WebViewScreen>
         await asyncYesNoDialog(context, '確定更新經文?', '更新經文會刪除此經文所有書籤!\n確定執行?');
     if (ok) {
       fetchFail = false;
-      hasBookmark = false;
       delFile(fileName);
       // Unfortunately, HTML bookmarks are lost after updating a stored HTML file.
       // Thus, we also delete all its bookmarks in state.json.

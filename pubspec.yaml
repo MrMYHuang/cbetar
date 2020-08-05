@@ -1,5 +1,5 @@
 name: cbetar
-description: A new Flutter application.
+description: "CBETA電子佛典閱讀器(非官方)支援搜尋經文、書籤功能、離線瀏覽、暗色模式、字型調整。"
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `pub publish`. This is preferred for private packages.
@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.6.1+13
+version: 1.6.3+14
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
