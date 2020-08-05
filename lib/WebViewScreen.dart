@@ -33,7 +33,6 @@ class _WebViewScreen extends State<WebViewScreen>
   var works = List<Work>();
   final url = "$cbetaApiUrl/works?work=";
   var fileName = "";
-  var devicePixelRatio = 1.0;
 
   bool get hasBookmark {
     return (store.state as AppState).bookmarks.firstWhere((element) => element.uuid == widget.bookmarkUuid || element.uuid == bookmarkNewUuid, orElse: () => null) != null;
@@ -45,7 +44,6 @@ class _WebViewScreen extends State<WebViewScreen>
     fileName = "${widget.work.work}_juan${widget.work.juan}.html";
     Future.delayed(Duration.zero, () {
       fetchHtml();
-      devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
     });
   }
 
@@ -99,17 +97,14 @@ class _WebViewScreen extends State<WebViewScreen>
 
   void updateWebView(
       WebViewController controller, double fontSize, bool darkMode) async {
-    final platformFontSize = defaultTargetPlatform == TargetPlatform.iOS
-        ? "${2 * fontSize}pt"
-        : "${fontSize}px";
-
     final String cssStyles = '''
+    <meta name = "viewport" content = "user-scalable=no, width=device-width">
       <style>
       .lb {
         display: none
       }
       .t, p {
-        font-size: $platformFontSize;
+        font-size: ${fontSize}px;
         color: ${darkMode ? "white" : "black"}
       }
       body {
