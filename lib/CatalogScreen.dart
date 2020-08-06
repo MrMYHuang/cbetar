@@ -107,7 +107,7 @@ class _CatalogScreen extends State<CatalogScreen>
                         return GestureDetector(
                           child: Text(
                             catalogs[index].label,
-                            style: TextStyle(fontSize: 40),
+                            style: TextStyle(fontSize: vm.listFontSize),
                           ),
                           onTap: () {
                             if (catalogs[index].nodeType == "html") {

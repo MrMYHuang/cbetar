@@ -43,6 +43,7 @@ class MyApp extends StatefulWidget {
 class _MyApp extends State<MyApp> {
   final GlobalKey<NavigatorState> bookmarkNavigatorKey = GlobalKey();
   final GlobalKey<NavigatorState> catalogNavigatorKey = GlobalKey();
+  final GlobalKey<NavigatorState> settingNavigatorKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +72,10 @@ class _MyApp extends State<MyApp> {
                           if (catalogNavigatorKey.currentState.canPop())
                             catalogNavigatorKey.currentState.pop();
                           break;
+                        case 2:
+                          if (settingNavigatorKey.currentState.canPop())
+                            settingNavigatorKey.currentState.pop();
+                          break;
                       }
                       return false;
                     },
@@ -93,7 +98,13 @@ class _MyApp extends State<MyApp> {
                                       CatalogScreen(path: "CBETA"));
                             },
                           ),
-                          SettingScreen(),
+                          Navigator(
+                            key: settingNavigatorKey,
+                            onGenerateRoute: (RouteSettings routeSettings) {
+                              return MaterialPageRoute(
+                                  builder: (context) => SettingScreen());
+                            },
+                          ),
                         ],
                       ),
                       bottomNavigationBar: Container(

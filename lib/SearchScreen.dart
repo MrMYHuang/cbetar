@@ -61,64 +61,64 @@ class _SearchScreen extends State<SearchScreen>
       return store.state;
     }, builder: (BuildContext context, AppState vm) {
       return Scaffold(
-          appBar: AppBar(
-            title: Text("搜尋 - ${widget.keyword}"),
-            backgroundColor: Colors.blueAccent,
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.home),
-                onPressed: () async {
-                  Navigator.popUntil(context, (route) => route.isFirst);
+        appBar: AppBar(
+          title: Text("搜尋 - ${widget.keyword}"),
+          backgroundColor: Colors.blueAccent,
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.home),
+              onPressed: () async {
+                Navigator.popUntil(context, (route) => route.isFirst);
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: () async {
+                searchCbeta(context);
+              },
+            ),
+          ],
+        ),
+        body: searches == null
+            ? Center(child: CircularProgressIndicator())
+            : ListView.separated(
+                separatorBuilder: (context, index) => Divider(
+                  color: vm.darkMode ? Colors.white : Colors.black,
+                  thickness: 1,
+                ),
+                itemCount: searches.length,
+                itemBuilder: (BuildContext context, int index) {
+                  // access element from list using index
+                  bool isCatalog = searches[index].type == 'catalog';
+                  // you can create and return a widget of your choice
+                  return GestureDetector(
+                    child: Text(
+                      isCatalog
+                          ? searches[index].label
+                          : "${searches[index].title}\n作者:${searches[index].creators ?? "?"}",
+                      style: TextStyle(fontSize: vm.listFontSize),
+                    ),
+                    onTap: () {
+                      if (isCatalog) {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                              pageBuilder: (context, animation1, animation2) =>
+                                  CatalogScreen(path: searches[index].n)),
+                        );
+                      } else {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                              pageBuilder: (context, animation1, animation2) =>
+                                  WorkScreen(work: searches[index].work)),
+                        );
+                      }
+                    },
+                  );
                 },
               ),
-              IconButton(
-                icon: Icon(Icons.search),
-                onPressed: () async {
-                  searchCbeta(context);
-                },
-              ),
-            ],
-          ),
-          body: searches == null
-              ? Center(child: CircularProgressIndicator())
-              : ListView.separated(
-                  separatorBuilder: (context, index) => Divider(
-                        color: vm.darkMode ? Colors.white : Colors.black,
-                        thickness: 1,
-                      ),
-                  itemCount: searches.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    // access element from list using index
-                    bool isCatalog = searches[index].type == 'catalog';
-                    // you can create and return a widget of your choice
-                    return GestureDetector(
-                      child: Text(
-                        isCatalog
-                            ? searches[index].label
-                            : "${searches[index].title}\n作者:${searches[index].creators ?? "?"}",
-                        style: TextStyle(fontSize: 40),
-                      ),
-                      onTap: () {
-                        if (isCatalog) {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                                pageBuilder:
-                                    (context, animation1, animation2) =>
-                                        CatalogScreen(path: searches[index].n)),
-                          );
-                        } else {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                                pageBuilder:
-                                    (context, animation1, animation2) =>
-                                        WorkScreen(work: searches[index].work)),
-                          );
-                        }
-                      },
-                    );
-                  }));
+      );
     });
   }
 

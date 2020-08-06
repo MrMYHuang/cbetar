@@ -113,7 +113,7 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
                         return GestureDetector(
                           child: Text(
                             "卷${juans[index]}",
-                            style: TextStyle(fontSize: 40),
+                            style: TextStyle(fontSize: vm.listFontSize),
                           ),
                           onTap: () {
                             var work = works[0];

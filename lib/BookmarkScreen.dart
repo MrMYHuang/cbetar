@@ -43,7 +43,7 @@ class _BookmarkScreen extends State<BookmarkScreen> {
                     return GestureDetector(
                       child: Text(
                         "${bookmark.work.title}第${bookmark.work.juan}卷\n${bookmark.selectedText}",
-                        style: TextStyle(fontSize: 40),
+                        style: TextStyle(fontSize: vm.listFontSize),
                       ),
                       onTap: () {
                         Navigator.push(
