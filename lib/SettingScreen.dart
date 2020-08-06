@@ -56,6 +56,7 @@ class _SettingScreen extends State<SettingScreen> {
           child: Scaffold(
             appBar: AppBar(
               title: Text("設定"),
+              backgroundColor: Colors.blueAccent,
             ),
             body: ListView(
               children: <Widget>[

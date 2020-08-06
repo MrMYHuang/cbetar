@@ -69,6 +69,7 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
       return Scaffold(
           appBar: AppBar(
             title: Text(title),
+            backgroundColor: Colors.blueAccent,
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.refresh),

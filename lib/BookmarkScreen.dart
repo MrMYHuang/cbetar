@@ -21,6 +21,7 @@ class _BookmarkScreen extends State<BookmarkScreen> {
       return Scaffold(
           appBar: AppBar(
             title: Text("書籤"),
+            backgroundColor: Colors.blueAccent,
           ),
           body: vm.bookmarks.length == 0
               ? Center(
@@ -31,7 +32,7 @@ class _BookmarkScreen extends State<BookmarkScreen> {
                 )
               : ListView.separated(
                   separatorBuilder: (context, index) => Divider(
-                        color: Colors.black,
+                        color: vm.darkMode ? Colors.white : Colors.black,
                         thickness: 1,
                       ),
                   itemCount: vm.bookmarks.length,

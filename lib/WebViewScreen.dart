@@ -197,6 +197,7 @@ class _WebViewScreen extends State<WebViewScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text("${widget.work.title}卷${widget.work.juan}"),
+        backgroundColor: Colors.blueAccent,
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.bookmark),

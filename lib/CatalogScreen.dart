@@ -63,6 +63,7 @@ class _CatalogScreen extends State<CatalogScreen>
       return Scaffold(
           appBar: AppBar(
             title: Text("目錄"),
+            backgroundColor: Colors.blueAccent,
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.refresh),

@@ -63,6 +63,7 @@ class _SearchScreen extends State<SearchScreen>
       return Scaffold(
           appBar: AppBar(
             title: Text("搜尋 - ${widget.keyword}"),
+            backgroundColor: Colors.blueAccent,
             actions: <Widget>[
               IconButton(
                 icon: Icon(Icons.home),
