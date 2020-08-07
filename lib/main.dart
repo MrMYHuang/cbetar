@@ -95,7 +95,7 @@ class _MyApp extends State<MyApp> {
                             onGenerateRoute: (RouteSettings routeSettings) {
                               return MaterialPageRoute(
                                   builder: (context) =>
-                                      CatalogScreen(path: "CBETA"));
+                                      CatalogScreen(path: null));
                             },
                           ),
                           Navigator(

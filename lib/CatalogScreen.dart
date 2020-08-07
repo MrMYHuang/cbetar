@@ -37,6 +37,17 @@ class _CatalogScreen extends State<CatalogScreen>
   var fetchFail = false;
 
   void fetch() async {
+    if (widget.path == null) {
+      if (!mounted) return;
+      setState(() {
+        catalogs = List<Catalog>();
+        mainCatalogs.forEach((key, value) {
+          catalogs.add(Catalog(n: key, nodeType: null, label: value));
+        });
+      });
+      return;
+    }
+    
     try {
       final data = await fetchData(httpClient, url + widget.path);
 
