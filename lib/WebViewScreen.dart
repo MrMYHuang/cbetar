@@ -96,12 +96,15 @@ class _WebViewScreen extends State<WebViewScreen>
   }
 
   void updateWebView(
-      WebViewController controller, double fontSize, bool darkMode) async {
+      WebViewController controller, double fontSize, bool darkMode, bool showComments) async {
     final String cssStyles = '''
     <meta name = "viewport" content = "user-scalable=no, width=device-width">
       <style>
       .lb {
         display: none
+      }
+      #back {
+        display: ${showComments ? "visible" : "none"}
       }
       .t, p {
         font-size: ${fontSize}px;
@@ -187,7 +190,7 @@ class _WebViewScreen extends State<WebViewScreen>
       return store.state;
     }, builder: (BuildContext context, AppState vm) {
       _controller.future.then((controller) {
-        updateWebView(controller, vm.fontSize, vm.darkMode);
+        updateWebView(controller, vm.fontSize, vm.darkMode, vm.showComments);
       });
       return _webviewScreen();
     });

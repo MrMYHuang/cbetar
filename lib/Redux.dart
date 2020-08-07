@@ -9,6 +9,7 @@ enum ActionTypes {
   CHANGE_FONT_SIZE,
   CHANGE_LIST_FONT_SIZE,
   CHANGE_DARK_MODE,
+  CHANGE_COMMENT_MODE,
   ADD_BOOKMARK,
   DEL_BOOKMARK,
   DEL_BOOKMARKS, // Delete bookmarks of one file.
@@ -23,6 +24,8 @@ AppState reducer(AppState state, dynamic action) {
       newState.listFontSize = action.value; break;
     case ActionTypes.CHANGE_DARK_MODE:
       newState.darkMode = action.value; break;
+    case ActionTypes.CHANGE_COMMENT_MODE:
+      newState.showComments = action.value; break;
     case ActionTypes.ADD_BOOKMARK:
       saveFile(action.value['fileName'], action.value['htmlStr']);
       var bookmarksNew = new List<Bookmark>.from(state.bookmarks);
@@ -51,23 +54,24 @@ class AppState {
   double fontSize;
   double listFontSize;
   bool darkMode;
+  bool showComments;
   List<Bookmark> bookmarks;
 
-  AppState({this.fontSize = 32, this.listFontSize = 32, this.darkMode = true, this.bookmarks = const []});
+  AppState({this.fontSize = 32, this.listFontSize = 32, this.darkMode = true, this.showComments = false, this.bookmarks = const []});
 
   static AppState copyWith(AppState orig) =>
-      AppState(fontSize: orig.fontSize, listFontSize: orig.listFontSize, darkMode: orig.darkMode, bookmarks: List.from(orig.bookmarks));
+      AppState(fontSize: orig.fontSize, listFontSize: orig.listFontSize, darkMode: orig.darkMode, showComments: orig.showComments, bookmarks: List.from(orig.bookmarks));
 
   static AppState fromJson(dynamic json) {
     if (json != null) {
       final bookmarksNew = (json['bookmarks'] as List<dynamic>).map((e) => Bookmark.fromJson(e)).toList();
-      return AppState(fontSize: json['fontSize'], listFontSize: json['listFontSize'] ?? 32, darkMode: json['darkMode'] ?? true, bookmarks: bookmarksNew);
+      return AppState(fontSize: json['fontSize'], listFontSize: json['listFontSize'] ?? 32, darkMode: json['darkMode'] ?? true, showComments: json['showComments'] ?? false, bookmarks: bookmarksNew);
     } else {
       return AppState();
     }
   }
 
-  dynamic toJson() => {'fontSize': fontSize, 'listFontSize': listFontSize, 'darkMode': darkMode, 'bookmarks': bookmarks};
+  dynamic toJson() => {'fontSize': fontSize, 'listFontSize': listFontSize, 'darkMode': darkMode, 'showComments': showComments, 'bookmarks': bookmarks};
 }
 
 class MyViewModel {

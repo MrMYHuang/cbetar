@@ -47,6 +47,8 @@ class _SettingScreen extends State<SettingScreen> {
             MyActions(type: ActionTypes.CHANGE_LIST_FONT_SIZE, value: value)),
         onDarkModeChanged: (value) => store.dispatch(
             MyActions(type: ActionTypes.CHANGE_DARK_MODE, value: value)),
+        onCommentModeChanged: (value) => store.dispatch(
+            MyActions(type: ActionTypes.CHANGE_COMMENT_MODE, value: value)),
       );
     }, builder: (BuildContext context, _SettingScreenViewModel vm) {
       return Scaffold(
@@ -61,14 +63,19 @@ class _SettingScreen extends State<SettingScreen> {
             tiles: <Widget>[
               ListTile(
                 leading: Icon(Icons.brightness_2),
-                title: Row(children: [
-                  Expanded(
-                      child: Text('暗色模式',
-                          style: TextStyle(fontSize: fontSizeNorm))),
-                ]),
+                title: Text('暗色模式', style: TextStyle(fontSize: fontSizeNorm)),
                 trailing: Switch(
                   value: vm.state.darkMode,
                   onChanged: vm.onDarkModeChanged,
+                  activeColor: Colors.blueAccent,
+                ),
+              ),
+              ListTile(
+                leading: Icon(Icons.brightness_2),
+                title: Text('顯示註腳', style: TextStyle(fontSize: fontSizeNorm)),
+                trailing: Switch(
+                  value: vm.state.showComments,
+                  onChanged: vm.onCommentModeChanged,
                   activeColor: Colors.blueAccent,
                 ),
               ),
@@ -178,10 +185,13 @@ class _SettingScreenViewModel {
   final void Function(double value) onChanged;
   final void Function(double value) onListFontSizeChanged;
   final void Function(bool value) onDarkModeChanged;
+  final void Function(bool value) onCommentModeChanged;
 
-  _SettingScreenViewModel(
-      {this.state,
-      this.onChanged,
-      this.onListFontSizeChanged,
-      this.onDarkModeChanged});
+  _SettingScreenViewModel({
+    this.state,
+    this.onChanged,
+    this.onListFontSizeChanged,
+    this.onDarkModeChanged,
+    this.onCommentModeChanged,
+  });
 }
