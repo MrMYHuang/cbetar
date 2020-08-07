@@ -23,11 +23,13 @@ CBETA電子佛典閱讀器(非官方)，使用CBETA API存取電子佛經，支�
 
 ## 程式
 
-使用Flutter開發，請參考 https://flutter.dev/docs/get-started/install 作開發環境建置。目前主要開發Android版，未來希望能支援iOS, macOS, Linux, Windows。
+使用Flutter開發，請參考 https://flutter.dev/docs/get-started/install 作開發環境建置。目前主要開發Android, iOS版，未來希望能支援macOS, Linux, Windows。
 
 ## 市集上架
 
-Google Play: https://play.google.com/store/apps/details?id=com.github.mrmyhuang.cbetar
+Google Play (Android): https://play.google.com/store/apps/details?id=com.github.mrmyhuang.cbetar
+
+App Store (iOS): https://apps.apple.com/app/id1526621889 
 
 ## 隱私政策聲明
 
