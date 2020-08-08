@@ -104,7 +104,7 @@ class _SearchScreen extends State<SearchScreen>
                           context,
                           PageRouteBuilder(
                               pageBuilder: (context, animation1, animation2) =>
-                                  CatalogScreen(path: searches[index].n)),
+                                  CatalogScreen(path: searches[index].n, label: searches[index].label,)),
                         );
                       } else {
                         Navigator.push(

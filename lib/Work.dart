@@ -6,7 +6,7 @@ class Work extends Model {
   String juan_list;
   String work;
 
-  Work({this.title, this.juan, this.juan_list = '', this.work}) : super(null);
+  Work({this.title = '', this.juan = 1, this.juan_list = '', this.work = ''}) : super(null);
 
   Work copyWith({Work workOrig}) =>
       Work(title: workOrig.title, juan: workOrig.juan, work: workOrig.work);

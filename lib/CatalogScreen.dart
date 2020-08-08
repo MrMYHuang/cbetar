@@ -1,3 +1,4 @@
+import 'package:cbetar/Bookmark.dart';
 import 'package:cbetar/Utilities.dart';
 import 'package:cbetar/Work.dart';
 import 'package:flutter/cupertino.dart';
@@ -12,8 +13,9 @@ import 'WorkScreen.dart';
 
 class CatalogScreen extends StatefulWidget {
   final String path;
+  final String label;
 
-  CatalogScreen({Key key, this.path}) : super(key: key);
+  CatalogScreen({Key key, this.path, this.label}) : super(key: key);
 
   @override
   _CatalogScreen createState() {
@@ -47,7 +49,7 @@ class _CatalogScreen extends State<CatalogScreen>
       });
       return;
     }
-    
+
     try {
       final data = await fetchData(httpClient, url + widget.path);
 
@@ -66,6 +68,26 @@ class _CatalogScreen extends State<CatalogScreen>
     }
   }
 
+  bool get hasBookmark {
+    return (store.state as AppState).bookmarks.firstWhere(
+            (e) => e.type == BookmarkType.CATALOG && e.fileName == widget.path,
+            orElse: () => null) !=
+        null;
+  }
+
+  void addBookmarkHandler() {
+    store.dispatch(MyActions(type: ActionTypes.ADD_BOOKMARK, value: {
+      "bookmark": Bookmark(type: BookmarkType.CATALOG, fileName: widget.path, selectedText: widget.label)
+    }));
+  }
+
+  void delBookmarkHandler() {
+    store.dispatch(MyActions(type: ActionTypes.DEL_BOOKMARK, value: {
+      "type": BookmarkType.CATALOG,
+      "fileName": widget.path,
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(converter: (store) {
@@ -76,6 +98,21 @@ class _CatalogScreen extends State<CatalogScreen>
             title: Text("目錄"),
             backgroundColor: Colors.blueAccent,
             actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.bookmark),
+                color: widget.path == null ? Colors.transparent : hasBookmark ? Colors.red : Colors.white,
+                onPressed: () {
+                  if (widget.path == null) {
+                    return;
+                  }
+
+                  if (!hasBookmark) {
+                    addBookmarkHandler();
+                  } else {
+                    delBookmarkHandler();
+                  }
+                },
+              ),
               IconButton(
                 icon: Icon(Icons.refresh),
                 onPressed: () async {
@@ -126,16 +163,22 @@ class _CatalogScreen extends State<CatalogScreen>
                                 context,
                                 PageRouteBuilder(
                                     pageBuilder: (context, animation1,
-                                        animation2) =>
-                                        WebViewScreen(work: Work(work: catalogs[index].n, juan: 1, title: catalogs[index].label, juan_list: "1"), path: catalogs[index].file)),
+                                            animation2) =>
+                                        WebViewScreen(
+                                            work: Work(
+                                                work: catalogs[index].n,
+                                                juan: 1,
+                                                title: catalogs[index].label,
+                                                juan_list: "1"),
+                                            path: catalogs[index].file)),
                               );
-                            }  else if (catalogs[index].work == null) {
+                            } else if (catalogs[index].work == null) {
                               Navigator.push(
                                 context,
                                 PageRouteBuilder(
                                     pageBuilder: (context, animation1,
                                             animation2) =>
-                                        CatalogScreen(path: catalogs[index].n)),
+                                        CatalogScreen(path: catalogs[index].n, label: catalogs[index].label,)),
                               );
                             } else {
                               Navigator.push(

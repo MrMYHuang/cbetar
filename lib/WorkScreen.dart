@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'Bookmark.dart';
 import 'Globals.dart';
 import 'SearchScreen.dart';
 import 'WebViewScreen.dart';
@@ -61,6 +62,26 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
     }
   }
 
+  bool get hasBookmark {
+    return (store.state as AppState).bookmarks.firstWhere(
+            (e) => e.type == BookmarkType.WORK && e.work.work == widget.work,
+        orElse: () => null) !=
+        null;
+  }
+
+  void addBookmarkHandler() {
+    store.dispatch(MyActions(type: ActionTypes.ADD_BOOKMARK, value: {
+      "bookmark": Bookmark(type: BookmarkType.WORK, work: Work(work: widget.work, title: title))
+    }));
+  }
+
+  void delBookmarkHandler() {
+    store.dispatch(MyActions(type: ActionTypes.DEL_BOOKMARK, value: {
+      "type": BookmarkType.WORK,
+      "work": widget.work,
+    }));
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, AppState>(converter: (store) {
@@ -71,6 +92,17 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
             title: Text(title),
             backgroundColor: Colors.blueAccent,
             actions: <Widget>[
+              IconButton(
+                icon: Icon(Icons.bookmark),
+                color: hasBookmark ? Colors.red : Colors.white,
+                onPressed: () {
+                  if (!hasBookmark) {
+                    addBookmarkHandler();
+                  } else {
+                    delBookmarkHandler();
+                  }
+                },
+              ),
               IconButton(
                 icon: Icon(Icons.refresh),
                 onPressed: () async {

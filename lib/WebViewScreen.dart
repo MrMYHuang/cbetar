@@ -35,7 +35,12 @@ class _WebViewScreen extends State<WebViewScreen>
   var fileName = "";
 
   bool get hasBookmark {
-    return (store.state as AppState).bookmarks.firstWhere((element) => element.uuid == widget.bookmarkUuid || element.uuid == bookmarkNewUuid, orElse: () => null) != null;
+    return (store.state as AppState).bookmarks.firstWhere(
+            (e) =>
+                e.type == BookmarkType.JUAN &&
+                (e.uuid == widget.bookmarkUuid || e.uuid == bookmarkNewUuid),
+            orElse: () => null) !=
+        null;
   }
 
   @override
@@ -95,8 +100,8 @@ class _WebViewScreen extends State<WebViewScreen>
     }
   }
 
-  void updateWebView(
-      WebViewController controller, double fontSize, bool darkMode, bool showComments) async {
+  void updateWebView(WebViewController controller, double fontSize,
+      bool darkMode, bool showComments) async {
     final String cssStyles = '''
     <meta name = "viewport" content = "user-scalable=no, width=device-width">
       <style>
@@ -155,8 +160,8 @@ class _WebViewScreen extends State<WebViewScreen>
     // Thus, we save the checks a loaded HTML has injected CSS and scripts.
     // It simplifies this program logics.
     final workHtmlStylesScripts = cssStyles + jsScripts + workHtml;
-    final String contentBase64 = base64Encode(
-        const Utf8Encoder().convert(workHtmlStylesScripts));
+    final String contentBase64 =
+        base64Encode(const Utf8Encoder().convert(workHtmlStylesScripts));
     await controller.loadUrl('$base64HtmlPrefix$contentBase64');
   }
 
@@ -177,9 +182,11 @@ class _WebViewScreen extends State<WebViewScreen>
         (widget.bookmarkUuid == "") ? bookmarkNewUuid : widget.bookmarkUuid;
     _controller.future.then((controller) {
       controller.evaluateJavascript("delBookmark('$uuidToDel');").then((a) {
-        store.dispatch(MyActions(
-            type: ActionTypes.DEL_BOOKMARK,
-            value: {"fileName": fileName, "uuid": uuidToDel}));
+        store.dispatch(MyActions(type: ActionTypes.DEL_BOOKMARK, value: {
+          "type": BookmarkType.JUAN,
+          "fileName": fileName,
+          "uuid": uuidToDel
+        }));
       });
     });
   }
@@ -279,6 +286,7 @@ class _WebViewScreen extends State<WebViewScreen>
           workHtml = json["html"] as String;
           final selectedText = json["selectedText"] as String;
           final bookmarkNew = Bookmark(
+              type: BookmarkType.JUAN,
               uuid: bookmarkNewUuid,
               work: widget.work,
               selectedText: selectedText,

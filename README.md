@@ -31,6 +31,21 @@ Google Play (Android): https://play.google.com/store/apps/details?id=com.github.
 
 App Store (iOS): https://apps.apple.com/app/id1526621889 
 
+## 版本歷史
+* 1.9.0:
+    * 目錄支援書籤功能
+* 1.8.0:
+    * 支援CBETA完整目錄
+    * 新增顯示註腳設定
+* 1.7.0:
+    * 新增列表字型大小增設定
+* 1.6.4:
+    App Store上架第一版
+* 1.6.3:
+    * 支援暗色模式
+* 1.5.0:
+    * Google Play上架第一版
+
 ## 隱私政策聲明
 
 此app無收集使用者個人資訊。

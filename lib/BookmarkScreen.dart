@@ -1,3 +1,6 @@
+import 'package:cbetar/Bookmark.dart';
+import 'package:cbetar/CatalogScreen.dart';
+import 'package:cbetar/WorkScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
@@ -40,22 +43,63 @@ class _BookmarkScreen extends State<BookmarkScreen> {
                     // access element from list using index
                     // you can create and return a widget of your choice
                     final bookmark = vm.bookmarks[index];
-                    return GestureDetector(
-                      child: Text(
-                        "${bookmark.work.title}第${bookmark.work.juan}卷\n${bookmark.selectedText}",
-                        style: TextStyle(fontSize: vm.listFontSize),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                              pageBuilder: (context, animation1, animation2) =>
-                                  WebViewScreen(
-                                      work: vm.bookmarks[index].work,
-                                      bookmarkUuid: vm.bookmarks[index].uuid)),
+                    Widget itemWidget;
+                    switch (bookmark.type) {
+                      case BookmarkType.CATALOG:
+                        itemWidget = GestureDetector(
+                          child: Text(
+                            "${bookmark.selectedText}",
+                            style: TextStyle(fontSize: vm.listFontSize),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                  pageBuilder: (context, animation1,
+                                          animation2) =>
+                                      CatalogScreen(path: bookmark.fileName, label: bookmark.selectedText,)),
+                            );
+                          },
                         );
-                      },
-                    );
+                        break;
+                      case BookmarkType.WORK:
+                        itemWidget = GestureDetector(
+                          child: Text(
+                            "${bookmark.work.title}",
+                            style: TextStyle(fontSize: vm.listFontSize),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                  pageBuilder:
+                                      (context, animation1, animation2) =>
+                                          WorkScreen(work: bookmark.work.work)),
+                            );
+                          },
+                        );
+                        break;
+                      case BookmarkType.JUAN:
+                        itemWidget = GestureDetector(
+                          child: Text(
+                            "${bookmark.work.title}第${bookmark.work.juan}卷\n\"${bookmark.selectedText}...\"",
+                            style: TextStyle(fontSize: vm.listFontSize),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                  pageBuilder:
+                                      (context, animation1, animation2) =>
+                                          WebViewScreen(
+                                              work: bookmark.work,
+                                              bookmarkUuid: bookmark.uuid)),
+                            );
+                          },
+                        );
+                        break;
+                    }
+                    return itemWidget;
                   }));
     });
   }
