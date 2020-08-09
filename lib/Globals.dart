@@ -44,7 +44,7 @@ Map<String, String> mainCatalogs = {
 http.Client httpClient;
 
 void searchCbeta(BuildContext context) async {
-  final searchText = await asyncInputDialog(context, '搜尋經文', '輸入搜尋', '例:金剛經');
+  final searchText = await asyncInputDialog(context, '搜尋經文', '輸入搜尋', '例:金剛般若');
 
   if (searchText == null || searchText == '') {
     return;
