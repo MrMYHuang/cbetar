@@ -7,7 +7,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="佛典閱讀器"
+        android:label="電子佛典"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
