@@ -71,7 +71,7 @@ class _SettingScreen extends State<SettingScreen> {
                 ),
               ),
               ListTile(
-                leading: Icon(Icons.brightness_2),
+                leading: Icon(Icons.library_books),
                 title: Text('顯示註腳', style: TextStyle(fontSize: fontSizeNorm)),
                 trailing: Switch(
                   value: vm.state.showComments,
