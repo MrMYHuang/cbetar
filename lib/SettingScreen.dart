@@ -130,7 +130,7 @@ class _SettingScreen extends State<SettingScreen> {
                         style: TextStyle(fontSize: fontSizeNorm),
                       ),
                       Text(
-                        'CBETA API版: ${apiVersion}',
+                        'CBETA API版本: ${apiVersion}',
                         style: TextStyle(fontSize: fontSizeNorm),
                       ),
                       Text(
