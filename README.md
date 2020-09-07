@@ -1,5 +1,10 @@
 # CBETA電子佛典閱讀器(非官方)
 
+## 注意!
+此app目前只支援Android, iOS，作者決定改寫成progressive web app的第2代閱讀器，此第1代app目前停止開發。
+
+第2代非官方CBETA電子佛典閱讀器Github repo: https://github.com/MrMYHuang/cbetar2
+
 ## 特色
 
 搜尋經文、書籤功能、離線瀏覽、暗色模式、字型調整。
