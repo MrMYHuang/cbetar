@@ -15,7 +15,7 @@ class Model {
 }
 
 Future<List<Object>> fetchData(http.Client client, String url) async {
-  final response = await client.get(url);
+  final response = await client.get(Uri.parse(url));
 
   // Use the compute function to run parsePhotos in a separate isolate.
   return compute(parseData, response.body);
