@@ -37,6 +37,10 @@ Google Play (Android): https://play.google.com/store/apps/details?id=com.github.
 App Store (iOS): https://apps.apple.com/app/id1526621889 
 
 ## 版本歷史
+* 1.9.3:
+    * 修改 app 名為"電子佛典(舊版)"
+* 1.9.2:
+    * 升級 Flutter 2.2.3
 * 1.9.0:
     * 目錄支援書籤功能
 * 1.8.0:
