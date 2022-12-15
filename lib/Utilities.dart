@@ -84,7 +84,7 @@ Future<String> asyncInputDialog(BuildContext context, String message, String fie
           ],
         ),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             child: Text('確定'),
             onPressed: () {
               Navigator.of(context).pop(text);
@@ -109,13 +109,13 @@ Future<bool> asyncYesNoDialog(BuildContext context, String title, String content
           ],
         ),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             child: Text('取消'),
             onPressed: () {
               Navigator.of(context).pop(false);
             },
           ),
-          FlatButton(
+          TextButton(
             child: Text('確定'),
             onPressed: () {
               Navigator.of(context).pop(true);
@@ -140,7 +140,7 @@ Future<bool> asyncYesDialog(BuildContext context, String title, String content) 
           ],
         ),
         actions: <Widget>[
-          FlatButton(
+          TextButton(
             child: Text('確定'),
             onPressed: () {
               Navigator.of(context).pop(true);

@@ -51,7 +51,7 @@ class _SearchScreen extends State<SearchScreen>
 
       // Find the Scaffold in the widget tree and use
       // it to show a SnackBar.
-      Scaffold.of(context).showSnackBar(snackBar);
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
   }
 

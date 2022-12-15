@@ -6,7 +6,7 @@ import 'Utilities.dart';
 
 double fontSizeNorm = 24;
 double fontSizeLarge = 48;
-String apiVersion = 'v1.2';
+String apiVersion = 'stable';
 String cbetaApiUrl = 'http://cbdata.dila.edu.tw/${apiVersion}';
 
 Map<String, String> mainCatalogs = {
