@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:get_version/get_version.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'Redux.dart';
 import 'Globals.dart';
 
@@ -24,9 +24,10 @@ class _SettingScreen extends State<SettingScreen> {
   var _projectVersion = "";
 
   void loadVersionInfo() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
     var projectVersion = "";
     try {
-      projectVersion = await GetVersion.projectVersion;
+      projectVersion = packageInfo.version;
     } catch (e) {}
 
     if (!mounted) return;
@@ -126,11 +127,11 @@ class _SettingScreen extends State<SettingScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        '程式版本: ${_projectVersion}',
+                        '程式版本: $_projectVersion',
                         style: TextStyle(fontSize: fontSizeNorm),
                       ),
                       Text(
-                        'CBETA API版本: ${apiVersion}',
+                        'CBETA API版本: $apiVersion',
                         style: TextStyle(fontSize: fontSizeNorm),
                       ),
                       Text(
@@ -144,7 +145,7 @@ class _SettingScreen extends State<SettingScreen> {
                               color: Colors.blue, fontSize: fontSizeNorm),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              launch('mailto:myh@live.com');
+                              launchUrl(Uri(scheme: 'mailto', path: 'myh@live.com'));
                             },
                         ),
                       ),
@@ -155,7 +156,7 @@ class _SettingScreen extends State<SettingScreen> {
                               color: Colors.blue, fontSize: fontSizeNorm),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              launch('https://github.com/MrMYHuang/cbetar');
+                              launchUrl(Uri(scheme: 'https', host: 'github.com', path: '/MrMYHuang/cbetar'));
                             },
                         ),
                       ),
@@ -166,7 +167,7 @@ class _SettingScreen extends State<SettingScreen> {
                               color: Colors.blue, fontSize: fontSizeNorm),
                           recognizer: TapGestureRecognizer()
                             ..onTap = () {
-                              launch('http://cbdata.dila.edu.tw/v1.2/');
+                              launchUrl(Uri(scheme: 'https', host: 'cbdata.dila.edu.tw', path: 'stable'));
                             },
                         ),
                       )
@@ -188,10 +189,10 @@ class _SettingScreenViewModel {
   final void Function(bool value) onCommentModeChanged;
 
   _SettingScreenViewModel({
-    this.state,
-    this.onChanged,
-    this.onListFontSizeChanged,
-    this.onDarkModeChanged,
-    this.onCommentModeChanged,
+    required this.state,
+    required this.onChanged,
+    required this.onListFontSizeChanged,
+    required this.onDarkModeChanged,
+    required this.onCommentModeChanged,
   });
 }

@@ -1,7 +1,6 @@
 import 'package:cbetar/Bookmark.dart';
 import 'package:cbetar/Utilities.dart';
 import 'package:cbetar/Work.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'Globals.dart';
@@ -12,10 +11,10 @@ import 'WebViewScreen.dart';
 import 'WorkScreen.dart';
 
 class CatalogScreen extends StatefulWidget {
-  final String path;
-  final String label;
+  final String? path;
+  final String? label;
 
-  CatalogScreen({Key key, this.path, this.label}) : super(key: key);
+  CatalogScreen({super.key, this.path, this.label});
 
   @override
   _CatalogScreen createState() {
@@ -25,8 +24,8 @@ class CatalogScreen extends StatefulWidget {
 
 class _CatalogScreen extends State<CatalogScreen>
     with AutomaticKeepAliveClientMixin {
-  List<Catalog> catalogs;
-  final url = "${cbetaApiUrl}/catalog_entry?q=";
+  List<Catalog>? catalogs;
+  final url = "$cbetaApiUrl/catalog_entry?q=";
 
   @override
   void initState() {
@@ -42,22 +41,22 @@ class _CatalogScreen extends State<CatalogScreen>
     if (widget.path == null) {
       if (!mounted) return;
       setState(() {
-        catalogs = List<Catalog>();
+        catalogs = <Catalog>[];
         mainCatalogs.forEach((key, value) {
-          catalogs.add(Catalog(n: key, nodeType: null, label: value));
+          catalogs?.add(Catalog(n: key, nodeType: null, label: value));
         });
       });
       return;
     }
 
     try {
-      final data = await fetchData(httpClient, url + widget.path);
+      final data = await fetchData(httpClient, url + widget.path!);
 
       if (!mounted) return;
       setState(() {
-        catalogs = List<Catalog>();
+        catalogs = <Catalog>[];
         data.forEach((element) {
-          catalogs.add(Catalog.fromJson(element));
+          catalogs?.add(Catalog.fromJson(element as Map<String, dynamic>));
         });
       });
     } catch (e) {
@@ -69,15 +68,19 @@ class _CatalogScreen extends State<CatalogScreen>
   }
 
   bool get hasBookmark {
-    return (store.state as AppState).bookmarks.firstWhere(
-            (e) => e.type == BookmarkType.CATALOG && e.fileName == widget.path,
-            orElse: () => null) !=
-        null;
+    try {
+      (store.state).bookmarks.firstWhere(
+              (e) =>
+          e.type == BookmarkType.CATALOG && e.fileName == widget.path);
+      return true;
+    } catch(e) {
+      return false;
+    }
   }
 
   void addBookmarkHandler() {
     store.dispatch(MyActions(type: ActionTypes.ADD_BOOKMARK, value: {
-      "bookmark": Bookmark(type: BookmarkType.CATALOG, fileName: widget.path, selectedText: widget.label)
+      "bookmark": Bookmark(type: BookmarkType.CATALOG, fileName: widget.path!, selectedText: widget.label!)
     }));
   }
 
@@ -148,17 +151,17 @@ class _CatalogScreen extends State<CatalogScreen>
                             color: vm.darkMode ? Colors.white : Colors.black,
                             thickness: 1,
                           ),
-                      itemCount: catalogs.length,
+                      itemCount: catalogs!.length,
                       itemBuilder: (BuildContext context, int index) {
                         // access element from list using index
                         // you can create and return a widget of your choice
                         return GestureDetector(
                           child: Text(
-                            catalogs[index].label,
+                            catalogs![index].label,
                             style: TextStyle(fontSize: vm.listFontSize),
                           ),
                           onTap: () {
-                            if (catalogs[index].nodeType == "html") {
+                            if (catalogs![index].nodeType == "html") {
                               Navigator.push(
                                 context,
                                 PageRouteBuilder(
@@ -166,19 +169,19 @@ class _CatalogScreen extends State<CatalogScreen>
                                             animation2) =>
                                         WebViewScreen(
                                             work: Work(
-                                                work: catalogs[index].n,
+                                                work: catalogs![index].n,
                                                 juan: 1,
-                                                title: catalogs[index].label,
+                                                title: catalogs![index].label,
                                                 juan_list: "1"),
-                                            path: catalogs[index].file)),
+                                            path: catalogs![index].file ?? "")),
                               );
-                            } else if (catalogs[index].work == null) {
+                            } else if (catalogs![index].work == null) {
                               Navigator.push(
                                 context,
                                 PageRouteBuilder(
                                     pageBuilder: (context, animation1,
                                             animation2) =>
-                                        CatalogScreen(path: catalogs[index].n, label: catalogs[index].label,)),
+                                        CatalogScreen(path: catalogs![index].n, label: catalogs![index].label,)),
                               );
                             } else {
                               Navigator.push(
@@ -186,7 +189,7 @@ class _CatalogScreen extends State<CatalogScreen>
                                 PageRouteBuilder(
                                     pageBuilder: (context, animation1,
                                             animation2) =>
-                                        WorkScreen(work: catalogs[index].work)),
+                                        WorkScreen(work: catalogs![index].work!)),
                               );
                             }
                           },

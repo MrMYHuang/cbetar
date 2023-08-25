@@ -1,13 +1,13 @@
 import 'package:cbetar/Utilities.dart';
 
 class Catalog extends Model {
-  String n;
-  String nodeType;
-  String label;
-  String work;
-  String file;
+  late String n;
+  late String? nodeType;
+  late String label;
+  late String? work;
+  late String? file;
 
-  Catalog({this.n, this.nodeType, this.label, this.work, this.file}) : super(null);
+  Catalog({required this.n, required this.nodeType, required this.label, this.work, this.file}) : super(null);
 
   @override
   Catalog.fromJson(Map<String, dynamic> json) : super(null) {

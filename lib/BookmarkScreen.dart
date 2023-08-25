@@ -65,7 +65,7 @@ class _BookmarkScreen extends State<BookmarkScreen> {
                       case BookmarkType.WORK:
                         itemWidget = GestureDetector(
                           child: Text(
-                            "${bookmark.work.title}",
+                            "${bookmark.work?.title}",
                             style: TextStyle(fontSize: vm.listFontSize),
                           ),
                           onTap: () {
@@ -74,7 +74,7 @@ class _BookmarkScreen extends State<BookmarkScreen> {
                               PageRouteBuilder(
                                   pageBuilder:
                                       (context, animation1, animation2) =>
-                                          WorkScreen(work: bookmark.work.work)),
+                                          WorkScreen(work: bookmark.work!.work)),
                             );
                           },
                         );
@@ -82,7 +82,7 @@ class _BookmarkScreen extends State<BookmarkScreen> {
                       case BookmarkType.JUAN:
                         itemWidget = GestureDetector(
                           child: Text(
-                            "${bookmark.work.title}第${bookmark.work.juan}卷\n\"${bookmark.selectedText}...\"",
+                            "${bookmark.work?.title}第${bookmark.work?.juan}卷\n\"${bookmark.selectedText}...\"",
                             style: TextStyle(fontSize: vm.listFontSize),
                           ),
                           onTap: () {
@@ -92,7 +92,7 @@ class _BookmarkScreen extends State<BookmarkScreen> {
                                   pageBuilder:
                                       (context, animation1, animation2) =>
                                           WebViewScreen(
-                                              work: bookmark.work,
+                                              work: bookmark.work!,
                                               bookmarkUuid: bookmark.uuid)),
                             );
                           },

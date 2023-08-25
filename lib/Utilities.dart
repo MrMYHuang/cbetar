@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -11,10 +9,10 @@ import 'package:charset_converter/charset_converter.dart';
 import 'Globals.dart';
 
 class Model {
-  Model(Map<String, dynamic> json);
+  Model(Map<String, dynamic>? json);
 }
 
-Future<List<Object>> fetchData(http.Client client, String url) async {
+Future<List<dynamic>> fetchData(http.Client client, String url) async {
   final response = await client.get(Uri.parse(url));
 
   // Use the compute function to run parsePhotos in a separate isolate.
@@ -31,14 +29,14 @@ Future<String> htmlBig5ToUtf8(Uint8List data) async {
   return decoded.replaceFirst("charset=big5", "charset=utf8");
 }
 
-List<Object> parseData(String responseBody) {
+List<dynamic> parseData(String responseBody) {
   final parsed = jsonDecode(responseBody).cast<String, dynamic>();
   return parsed["results"] as List<dynamic>;
 }
 
 Future<File> getLocalFile(String fileName) async {
   final directory = await getApplicationDocumentsDirectory();
-  return File('${directory.path}/${fileName}');
+  return File('${directory.path}/$fileName');
 }
 
 Future<bool> saveFile(String fileName, String text) async {
@@ -50,7 +48,7 @@ Future<bool> saveFile(String fileName, String text) async {
 Future<bool> delFile(String fileName) async {
   final file = await getLocalFile(fileName);
   try {
-    await file.deleteSync();
+    file.deleteSync();
     return true;
   } catch (e) {
     return false;
@@ -62,7 +60,7 @@ Future<String> loadLocalFile(String fileName) async {
   return file.readAsStringSync();
 }
 
-Future<String> asyncInputDialog(BuildContext context, String message, String field, String hint) async {
+Future<String?> asyncInputDialog(BuildContext context, String message, String field, String hint) async {
   String text = '';
   return showDialog<String>(
     context: context,
@@ -96,7 +94,7 @@ Future<String> asyncInputDialog(BuildContext context, String message, String fie
   );
 }
 
-Future<bool> asyncYesNoDialog(BuildContext context, String title, String content) async {
+Future<bool?> asyncYesNoDialog(BuildContext context, String title, String content) async {
   return showDialog<bool>(
     context: context,
     barrierDismissible: true, // dialog is dismissible with a tap on the barrier
@@ -127,7 +125,7 @@ Future<bool> asyncYesNoDialog(BuildContext context, String title, String content
   );
 }
 
-Future<bool> asyncYesDialog(BuildContext context, String title, String content) async {
+Future<bool?> asyncYesDialog(BuildContext context, String title, String content) async {
   return showDialog<bool>(
     context: context,
     barrierDismissible: true, // dialog is dismissible with a tap on the barrier

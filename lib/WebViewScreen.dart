@@ -19,8 +19,7 @@ class WebViewScreen extends StatefulWidget {
   final String path;
   final String bookmarkUuid;
 
-  WebViewScreen({Key key, this.work, this.path = "", this.bookmarkUuid = ""})
-      : super(key: key);
+  WebViewScreen({super.key, required this.work, this.path = "", this.bookmarkUuid = ""});
 
   @override
   _WebViewScreen createState() {
@@ -30,17 +29,20 @@ class WebViewScreen extends StatefulWidget {
 
 class _WebViewScreen extends State<WebViewScreen>
     with AutomaticKeepAliveClientMixin {
-  var works = List<Work>();
+  var works = <Work>[];
   final url = "$cbetaApiUrl/works?work=";
   var fileName = "";
 
   bool get hasBookmark {
-    return (store.state as AppState).bookmarks.firstWhere(
-            (e) =>
-                e.type == BookmarkType.JUAN &&
-                (e.uuid == widget.bookmarkUuid || e.uuid == bookmarkNewUuid),
-            orElse: () => null) !=
-        null;
+    try {
+      store.state.bookmarks.firstWhere(
+              (e) =>
+          e.type == BookmarkType.JUAN &&
+              (e.uuid == widget.bookmarkUuid || e.uuid == bookmarkNewUuid));
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   @override
@@ -75,7 +77,7 @@ class _WebViewScreen extends State<WebViewScreen>
 
         if (!mounted) return;
         setState(() {
-          workHtml = data[0];
+          workHtml = data[0] as String;
         });
       } else {
         final data =
@@ -302,7 +304,7 @@ class _WebViewScreen extends State<WebViewScreen>
   void refreshButtonAction() async {
     final ok =
         await asyncYesNoDialog(context, '確定更新經文?', '更新經文會刪除此經文所有書籤!\n確定執行?');
-    if (ok) {
+    if (ok == true) {
       fetchFail = false;
       delFile(fileName);
       // Unfortunately, HTML bookmarks are lost after updating a stored HTML file.
@@ -337,7 +339,7 @@ class _WebViewScreen extends State<WebViewScreen>
 }
 
 class Choice {
-  const Choice({this.type, this.title, this.icon});
+  const Choice({required this.type, required this.title, required this.icon});
 
   final MenuActions type;
   final String title;

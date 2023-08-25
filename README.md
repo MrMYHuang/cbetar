@@ -37,6 +37,8 @@ Google Play (Android): https://play.google.com/store/apps/details?id=com.github.
 App Store (iOS): https://apps.apple.com/app/id1526621889 
 
 ## 版本歷史
+* 1.9.5:
+    * 升級 Android Target SDK 33.
 * 1.9.3:
     * 修改 app 名為"電子佛典(舊版)"
 * 1.9.2:

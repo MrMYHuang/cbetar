@@ -11,7 +11,7 @@ import 'WorkScreen.dart';
 class SearchScreen extends StatefulWidget {
   final String keyword;
 
-  SearchScreen({Key key, this.keyword}) : super(key: key);
+  SearchScreen({super.key, required this.keyword});
 
   @override
   _SearchScreen createState() {
@@ -21,7 +21,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreen extends State<SearchScreen>
     with AutomaticKeepAliveClientMixin {
-  List<Search> searches;
+  List<Search>? searches;
 
   @override
   void initState() {
@@ -39,9 +39,9 @@ class _SearchScreen extends State<SearchScreen>
 
       if (!mounted) return;
       setState(() {
-        searches = List<Search>();
+        searches = <Search>[];
         data.forEach((element) {
-          searches.add(Search.fromJson(element));
+          searches!.add(Search.fromJson(element as Map<String, dynamic>));
         });
       });
     } catch (e) {
@@ -86,16 +86,16 @@ class _SearchScreen extends State<SearchScreen>
                   color: vm.darkMode ? Colors.white : Colors.black,
                   thickness: 1,
                 ),
-                itemCount: searches.length,
+                itemCount: searches!.length,
                 itemBuilder: (BuildContext context, int index) {
                   // access element from list using index
-                  bool isCatalog = searches[index].type == 'catalog';
+                  bool isCatalog = searches![index].type == 'catalog';
                   // you can create and return a widget of your choice
                   return GestureDetector(
                     child: Text(
                       isCatalog
-                          ? searches[index].label
-                          : "${searches[index].title}\n作者:${searches[index].creators ?? "?"}",
+                          ? searches![index].label
+                          : "${searches![index].title}\n作者:${searches![index].creators}",
                       style: TextStyle(fontSize: vm.listFontSize),
                     ),
                     onTap: () {
@@ -104,14 +104,14 @@ class _SearchScreen extends State<SearchScreen>
                           context,
                           PageRouteBuilder(
                               pageBuilder: (context, animation1, animation2) =>
-                                  CatalogScreen(path: searches[index].n, label: searches[index].label,)),
+                                  CatalogScreen(path: searches![index].n, label: searches![index].label,)),
                         );
                       } else {
                         Navigator.push(
                           context,
                           PageRouteBuilder(
                               pageBuilder: (context, animation1, animation2) =>
-                                  WorkScreen(work: searches[index].work)),
+                                  WorkScreen(work: searches![index].work)),
                         );
                       }
                     },

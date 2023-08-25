@@ -1,11 +1,8 @@
 import 'package:cbetar/Utilities.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import 'Bookmark.dart';
 import 'Globals.dart';
-import 'SearchScreen.dart';
 import 'WebViewScreen.dart';
 import 'Work.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -14,7 +11,7 @@ import 'Redux.dart';
 class WorkScreen extends StatefulWidget {
   final String work;
 
-  WorkScreen({Key key, this.work}) : super(key: key);
+  WorkScreen({super.key, required this.work});
 
   @override
   _WorkScreen createState() {
@@ -23,11 +20,11 @@ class WorkScreen extends StatefulWidget {
 }
 
 class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
-  List<Work> works;
+  List<Work>? works;
   var title = "";
 
   bool get workFetchDone => works != null;
-  final url = "${cbetaApiUrl}/works?work=";
+  final url = "$cbetaApiUrl/works?work=";
 
   @override
   void initState() {
@@ -37,7 +34,7 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
     });
   }
 
-  var juans = List<String>();
+  var juans = <String>[];
 
   var fetchFail = false;
 
@@ -45,14 +42,14 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
     try {
       final data = await fetchData(httpClient, url + widget.work);
 
-      works = List<Work>();
+      works = <Work>[];
       data.forEach((element) {
-        works.add(Work.fromJson(element));
+        works!.add(Work.fromJson(element));
       });
       if (!mounted) return;
       setState(() {
-        title = works[0].title;
-        juans = works[0].juan_list.split(",").toList();
+        title = works![0].title;
+        juans = works![0].juan_list.split(",").toList();
       });
     } catch (e) {
       if (!mounted) return;
@@ -63,10 +60,14 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
   }
 
   bool get hasBookmark {
-    return (store.state as AppState).bookmarks.firstWhere(
-            (e) => e.type == BookmarkType.WORK && e.work.work == widget.work,
-        orElse: () => null) !=
-        null;
+    try {
+      (store.state).bookmarks.firstWhere(
+              (e) =>
+          e.type == BookmarkType.WORK && e.work!.work == widget.work);
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   void addBookmarkHandler() {
@@ -148,7 +149,7 @@ class _WorkScreen extends State<WorkScreen> with AutomaticKeepAliveClientMixin {
                             style: TextStyle(fontSize: vm.listFontSize),
                           ),
                           onTap: () {
-                            var work = works[0];
+                            var work = works![0];
                             work.juan = int.parse(juans[index]);
                             Navigator.push(
                               context,

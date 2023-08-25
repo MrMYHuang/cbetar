@@ -1,14 +1,14 @@
 import 'package:cbetar/Utilities.dart';
 
 class Work extends Model {
-  String title;
-  int juan;
-  String juan_list;
-  String work;
+  late String title;
+  late int juan;
+  late String juan_list;
+  late String work;
 
   Work({this.title = '', this.juan = 1, this.juan_list = '', this.work = ''}) : super(null);
 
-  Work copyWith({Work workOrig}) =>
+  Work copyWith({required Work workOrig}) =>
       Work(title: workOrig.title, juan: workOrig.juan, work: workOrig.work);
 
   @override

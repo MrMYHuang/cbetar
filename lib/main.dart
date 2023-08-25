@@ -1,13 +1,9 @@
-import 'dart:io';
-
 import 'package:cbetar/CatalogScreen.dart';
 import 'package:cbetar/BookmarkScreen.dart';
-import 'package:cbetar/Globals.dart';
 import 'package:cbetar/Utilities.dart';
 import 'SettingScreen.dart';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_persist/redux_persist.dart';
@@ -16,7 +12,6 @@ import 'Redux.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  httpClient = http.Client();
   final persistor = Persistor<AppState>(
     storage: FileStorage(await getLocalFile('state.json')),
     // Or use other engines
@@ -32,7 +27,7 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({Key key}) : super(key: key);
+  MyApp({super.key});
 
   @override
   _MyApp createState() {
@@ -65,16 +60,16 @@ class _MyApp extends State<MyApp> {
                     onWillPop: () async {
                       switch (DefaultTabController.of(context).index) {
                         case 0:
-                          if (bookmarkNavigatorKey.currentState.canPop())
-                            bookmarkNavigatorKey.currentState.pop();
+                          if (bookmarkNavigatorKey.currentState?.canPop() == true)
+                            bookmarkNavigatorKey.currentState?.pop();
                           break;
                         case 1:
-                          if (catalogNavigatorKey.currentState.canPop())
-                            catalogNavigatorKey.currentState.pop();
+                          if (catalogNavigatorKey.currentState?.canPop() == true)
+                            catalogNavigatorKey.currentState?.pop();
                           break;
                         case 2:
-                          if (settingNavigatorKey.currentState.canPop())
-                            settingNavigatorKey.currentState.pop();
+                          if (settingNavigatorKey.currentState?.canPop() == true)
+                            settingNavigatorKey.currentState?.pop();
                           break;
                       }
                       return false;

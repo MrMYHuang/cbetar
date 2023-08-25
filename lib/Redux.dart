@@ -3,7 +3,7 @@ import 'package:redux/redux.dart';
 
 import 'Utilities.dart';
 
-Store store;
+late Store<AppState> store;
 
 enum ActionTypes {
   CHANGE_FONT_SIZE,
@@ -56,7 +56,7 @@ AppState reducer(AppState state, dynamic action) {
         case BookmarkType.WORK:
           bookmarksNew.removeWhere((e) =>
               e.type == BookmarkType.WORK &&
-              e.work.work == action.value['work']);
+              e.work?.work == action.value['work']);
           break;
         case BookmarkType.JUAN:
           bookmarksNew.removeWhere((e) =>
@@ -133,12 +133,12 @@ class MyViewModel {
   final Map<String, dynamic> state;
   final void Function(double value) onChanged;
 
-  MyViewModel({this.state, this.onChanged});
+  MyViewModel(this.state, this.onChanged);
 }
 
 class MyActions {
   final ActionTypes type;
   final dynamic value;
 
-  MyActions({this.type, this.value});
+  MyActions({required this.type, required this.value});
 }

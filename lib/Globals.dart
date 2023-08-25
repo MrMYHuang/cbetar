@@ -7,7 +7,7 @@ import 'Utilities.dart';
 double fontSizeNorm = 24;
 double fontSizeLarge = 48;
 String apiVersion = 'stable';
-String cbetaApiUrl = 'http://cbdata.dila.edu.tw/${apiVersion}';
+String cbetaApiUrl = 'https://cbdata.dila.edu.tw/$apiVersion';
 
 Map<String, String> mainCatalogs = {
   "CBETA": "CBETA 部類",
@@ -41,7 +41,7 @@ Map<String, String> mainCatalogs = {
   "Vol-Y": "印順法師佛學著作集",
 };
 
-http.Client httpClient;
+http.Client httpClient = http.Client();
 
 void searchCbeta(BuildContext context) async {
   final searchText = await asyncInputDialog(context, '搜尋經文', '輸入搜尋', '例:金剛般若');
